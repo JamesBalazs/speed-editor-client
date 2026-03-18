@@ -6,6 +6,7 @@ package auth
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
 
 	"github.com/sstallion/go-hid"
@@ -15,12 +16,16 @@ var (
 	featureReportDefaultState  = []byte{0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 	featureReportHostChallenge = []byte{0x06, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 
-	expectedHostChallengeResponseHeader = []byte{0x06, 0x02}
+	expectedKeyboardChallengeResponseHeader = []byte{0x06, 0x00}
+	expectedHostChallengeResponseHeader     = []byte{0x06, 0x02}
 )
 
 func Authenticate(d *hid.Device) {
 	resetAuthState(d)
+	challenge := getKeyboardChallenge(d)
 	sendHostChallenge(d)
+
+	_ = challenge
 
 	fmt.Print("Auth success!")
 }
@@ -30,12 +35,20 @@ func resetAuthState(d *hid.Device) {
 	if err != nil {
 		panic(err.Error())
 	}
+}
 
+func getKeyboardChallenge(d *hid.Device) uint64 {
 	data := featureReportDefaultState // get keyboard challenge, store in a new copy of the byte array
-	_, err = d.GetFeatureReport(data)
+	_, err := d.GetFeatureReport(data)
 	if err != nil {
 		panic(err.Error())
 	}
+
+	if !bytes.Equal(data[0:2], expectedKeyboardChallengeResponseHeader) {
+		panic(fmt.Sprintf("Unexpected auth response header: %v", data))
+	}
+
+	return binary.LittleEndian.Uint64(data[2:])
 }
 
 // sendHostChallenge requests a challenge response from the device, presumably this step exists
