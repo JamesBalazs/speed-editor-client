@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/JamesBalazs/speed-editor-rebind/auth"
 	"github.com/sstallion/go-hid"
 )
 
@@ -21,6 +22,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer hid.Exit()
 
 	// Read the Manufacturer String.
 	s, err := d.GetMfrStr()
@@ -43,5 +45,5 @@ func main() {
 	}
 	fmt.Printf("Serial Number String: %s\n", s)
 
-	defer hid.Exit()
+	auth.Authenticate(d)
 }
