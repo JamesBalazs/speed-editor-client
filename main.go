@@ -46,4 +46,15 @@ func main() {
 	fmt.Printf("Serial Number String: %s\n", s)
 
 	auth.Authenticate(d)
+
+	for {
+		data := make([]byte, 16)
+		i, err := d.Read(data)
+
+		fmt.Printf("len: %d data: %v\n", i, data)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
