@@ -22,6 +22,8 @@ func NewInputReport(raw []byte, len int) ReportInt {
 		return NewJogReport(id, payload, len)
 	case ReportKeyPress:
 		return NewKeyPressReport(id, payload, len)
+	case ReportBatteryStats:
+		return NewBatteryStatsReport(id, payload, len)
 	default:
 		fmt.Printf("fell through id: %d len: %d data: %v\n", id, len, payload)
 		return nil
@@ -66,12 +68,12 @@ func NewKeyPressReport(id byte, payload []byte, length int) ReportInt {
 
 	keys := make([]int16, 6)
 	for i := 0; i < length; i += 2 {
-		keys[i/2] = int16(binary.LittleEndian.Uint16(payload[i:i+2]))
+		keys[i/2] = int16(binary.LittleEndian.Uint16(payload[i : i+2]))
 	}
 
 	return KeyPressReport{
-		Id:      id,
-		Keys:    keys,
+		Id:   id,
+		Keys: keys,
 	}
 }
 
@@ -82,6 +84,34 @@ type KeyPressReport struct {
 
 func (report KeyPressReport) Handle() {
 	fmt.Printf("got keypresses %v\n", report.Keys)
+
+	return // TODO implement handler
+}
+
+func NewBatteryStatsReport(id byte, payload []byte, length int) ReportInt {
+	if id != 7 || length != 2 || len(payload) != length {
+		log.Fatalf("malformed battery stats report id: %v payload: %v len: %d", id, payload, length)
+	}
+
+	keys := make([]int16, 6)
+	for i := 0; i < length; i += 2 {
+		keys[i/2] = int16(binary.LittleEndian.Uint16(payload[i : i+2]))
+	}
+
+	return KeyPressReport{
+		Id:   id,
+		Keys: keys,
+	}
+}
+
+type BatteryReport struct {
+	Id       uint8
+	Charging bool
+	Percent  uint8
+}
+
+func (report BatteryReport) Handle() {
+	fmt.Printf("got battery %v %d\n", report.Charging, report.Percent)
 
 	return // TODO implement handler
 }
