@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/JamesBalazs/speed-editor-rebind/auth"
+	"github.com/JamesBalazs/speed-editor-client/auth"
 	"github.com/sstallion/go-hid"
 )
 

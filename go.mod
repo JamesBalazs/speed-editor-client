@@ -1,4 +1,4 @@
-module github.com/JamesBalazs/speed-editor-rebind
+module github.com/JamesBalazs/speed-editor-client
 
 go 1.26.1
 

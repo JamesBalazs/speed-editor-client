@@ -17,7 +17,7 @@ Binding the Speed Editor (persists reboot, your BUSID will be different to mine)
 sudo usbipd bind --busid=4-9
 ```
 
-Attaching to WSL:
+Attaching to WSL (does not persist reboot):
 ```
 sudo usbipd attach --wsl --busid=4-9
 ```
