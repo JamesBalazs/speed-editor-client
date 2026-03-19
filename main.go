@@ -4,57 +4,26 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/JamesBalazs/speed-editor-rebind/auth"
 	"github.com/sstallion/go-hid"
 )
 
-const VID = 0x1edb
-const PID = 0xda0e
-
 func main() {
-	// Initialize the hid package.
 	if err := hid.Init(); err != nil {
-		log.Fatal(err)
-	}
-
-	// Open the device using the VID and PID.
-	d, err := hid.OpenFirst(VID, PID)
-	if err != nil {
 		log.Fatal(err)
 	}
 	defer hid.Exit()
 
-	// Read the Manufacturer String.
-	s, err := d.GetMfrStr()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Manufacturer String: %s\n", s)
+	speedEditor := NewSpeedEditor()
 
-	// Read the Product String.
-	s, err = d.GetProductStr()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Product String: %s\n", s)
+	deviceInfo := speedEditor.GetDeviceInfo()
 
-	// Read the Serial Number String.
-	s, err = d.GetSerialNbr()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Serial Number String: %s\n", s)
+	fmt.Printf("Manufacturer: %s\nProduct: %s\nSerial: %s\n", deviceInfo.MfrStr, deviceInfo.ProductStr, deviceInfo.SerialNbr)
 
-	auth.Authenticate(d)
+	speedEditor.Authenticate()
 
 	for {
-		data := make([]byte, 16)
-		i, err := d.Read(data)
+		data, len := speedEditor.Read()
 
-		fmt.Printf("len: %d data: %v\n", i, data)
-
-		if err != nil {
-			log.Fatal(err)
-		}
+		fmt.Printf("len: %d data: %v\n", len, data)
 	}
 }

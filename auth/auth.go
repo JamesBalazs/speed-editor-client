@@ -4,114 +4,58 @@
 
 package auth
 
-import (
-	"bytes"
-	"encoding/binary"
-	"fmt"
-
-	"github.com/sstallion/go-hid"
-)
-
 var (
-	featureReportDefaultState  = []byte{0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
-	featureReportHostChallenge = []byte{0x06, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+	authEvenTable = []uint64{
+		0x3ae1206f97c10bc8,
+		0x2a9ab32bebf244c6,
+		0x20a6f8b8df9adf0a,
+		0xaf80ece52cfc1719,
+		0xec2ee2f7414fd151,
+		0xb055adfd73344a15,
+		0xa63d2e3059001187,
+		0x751bf623f42e0dde,
+	}
 
-	authChallengeHeader = []byte{0x06, 0x03}
+	authOddTable = []uint64{
+		0x3e22b34f502e7fde,
+		0x24656b981875ab1c,
+		0xa17f3456df7bf8c3,
+		0x6df72e1941aef698,
+		0x72226f011e66ab94,
+		0x3831a3c606296b42,
+		0xfd7ff81881332c89,
+		0x61a3f6474ff236c6,
+	}
 
-	expectedKeyboardChallengeResponseHeader = []byte{0x06, 0x00}
-	expectedHostChallengeResponseHeader     = []byte{0x06, 0x02}
-	expectedAuthResponseHeader              = []byte{0x06, 0x04}
-
-	reauthTimeout = uint16(65535) // initialise to highest possible value
+	mask = uint64(0xa79a63f585d37bf0)
 )
 
-func Authenticate(d *hid.Device) {
-	resetAuthState(d)
-	challenge := getKeyboardChallenge(d)
-
-	sendHostChallenge(d)
-	_ = getHostChallengeResponse(d) // We don't care about the response, since we don't care if it's a real Speed Editor
-
-	response := calculateChallengeResponse(challenge)
-	sendAuthChallengeResponse(d, response)
-
-	reauthTimeout = getAuthChallengeResult(d)
-
-	fmt.Printf("Auth success! Reauth in %d\n", reauthTimeout)
+func rol8(v uint64) uint64 {
+	return ((v << 56) | (v >> 8)) & 0xffffffffffffffff
 }
 
-func resetAuthState(d *hid.Device) {
-	_, err := d.SendFeatureReport(featureReportDefaultState)
-	if err != nil {
-		panic(err.Error())
+func rol8n(v, n uint64) uint64 {
+	for _ = range n {
+		v = rol8(v)
 	}
+
+	return v
 }
 
-func getKeyboardChallenge(d *hid.Device) uint64 {
-	// get keyboard challenge, store in a new copy of the byte array
-	data := make([]byte, len(featureReportDefaultState))
-	copy(data, featureReportDefaultState)
+// CalculateChallengeResponse uses Sylvain Munaut's reverse engineered
+// handshake algorithm to generate the expected response based on the
+// Speed Editor's challenge.
+func CalculateChallengeResponse(challenge uint64) uint64 {
+	n := challenge & 7
+	v := rol8n(challenge, n)
 
-	_, err := d.GetFeatureReport(data)
-	if err != nil {
-		panic(err.Error())
+	var k uint64
+	if (v & 1) == ((0x78 >> n) & 1) {
+		k = authEvenTable[n]
+	} else {
+		v = v ^ rol8(v)
+		k = authOddTable[n]
 	}
 
-	if !bytes.Equal(data[0:2], expectedKeyboardChallengeResponseHeader) {
-		panic(fmt.Sprintf("Unexpected auth response header: %v", data))
-	}
-
-	return binary.LittleEndian.Uint64(data[2:])
-}
-
-// sendHostChallenge requests a challenge response from the device.
-// Presumably this step exists to confirm it's a real Speed Editor.
-func sendHostChallenge(d *hid.Device) {
-	_, err := d.SendFeatureReport(featureReportHostChallenge)
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
-func getHostChallengeResponse(d *hid.Device) []byte {
-	data := make([]byte, len(featureReportDefaultState))
-	copy(data, featureReportDefaultState)
-
-	_, err := d.GetFeatureReport(data)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	if !bytes.Equal(data[0:2], expectedHostChallengeResponseHeader) {
-		panic(fmt.Sprintf("Unexpected auth response header: %v", data))
-	}
-
-	return data
-}
-
-func sendAuthChallengeResponse(d *hid.Device, response uint64) {
-	responseBytes := make([]byte, len(authChallengeHeader))
-	copy(responseBytes, authChallengeHeader)
-	responseBytes = binary.LittleEndian.AppendUint64(authChallengeHeader, response)
-
-	_, err := d.SendFeatureReport(responseBytes)
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
-func getAuthChallengeResult(d *hid.Device) uint16 {
-	data := make([]byte, len(featureReportDefaultState))
-	copy(data, featureReportDefaultState)
-
-	_, err := d.GetFeatureReport(data)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	if !bytes.Equal(data[0:2], expectedAuthResponseHeader) {
-		panic(fmt.Sprintf("Unexpected auth response header: %v", data))
-	}
-
-	return binary.LittleEndian.Uint16(data[2:4])
+	return v ^ (rol8(v) & mask) ^ k
 }
