@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	inputReport "github.com/JamesBalazs/speed-editor-client/input_report"
 	"github.com/sstallion/go-hid"
 )
 
@@ -49,6 +50,8 @@ type SpeedEditorInt interface {
 	//
 	// The first byte indicates which report type was received.
 	Read() ([]byte, int)
+
+	Poll()
 }
 
 type SpeedEditor struct {
@@ -102,6 +105,10 @@ func (se SpeedEditor) Read() ([]byte, int) {
 	return data, len
 }
 
-func (se SpeedEditor) HandleInputReport(raw []byte, len int) {
-
+func (se SpeedEditor) Poll() {
+	for {
+		data, len := se.Read()
+		report := inputReport.NewInputReport(data, len)
+		report.Handle()
+	}
 }
