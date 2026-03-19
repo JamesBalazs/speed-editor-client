@@ -23,7 +23,7 @@ func main() {
 
 	for {
 		data, len := speedEditor.Read()
-
-		fmt.Printf("len: %d data: %v\n", len, data)
+		report := NewInputReport(data, len)
+		report.Handle()
 	}
 }

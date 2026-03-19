@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -73,8 +74,12 @@ func (se SpeedEditor) Authenticate() {
 	// Do not read or update this outside of the goroutine to avoid a data race.
 	reAuthSeconds := se.AuthHandler.Authenticate()
 
+	fmt.Printf("Initial handshake\n")
+
 	go func() {
 		for {
+			fmt.Printf("Sleeping %s\n", reAuthSeconds)
+
 			time.Sleep(reAuthSeconds)
 
 			reAuthSeconds = se.AuthHandler.Authenticate()
@@ -95,4 +100,8 @@ func (se SpeedEditor) Read() ([]byte, int) {
 	}
 
 	return data, len
+}
+
+func (se SpeedEditor) HandleInputReport(raw []byte, len int) {
+
 }
