@@ -1,119 +1,62 @@
 package keys
 
-const (
-	NONE = "NONE" // /
-
-	SMART_INSRT  = "SMART_INSRT"  // SMART INSRT [CLIP]
-	APPND        = "APPND"        // APPND [CLIP]
-	RIPL_OWR     = "RIPL_OWR"     // RIPL O/WR
-	CLOSE_UP     = "CLOSE_UP"     // CLOSE UP [YPOS]
-	PLACE_ON_TOP = "PLACE_ON_TOP" // PLACE ON TOP
-	SRC_OWR      = "SRC_OWR"      // SRC O/WR
-
-	IN        = "IN"        // IN [CLR]
-	OUT       = "OUT"       // OUT [CLR]
-	TRIM_IN   = "TRIM_IN"   // TRIM IN
-	TRIM_OUT  = "TRIM_OUT"  // TRIM OUT
-	ROLL      = "ROLL"      // ROLL [SLIDE]
-	SLIP_SRC  = "SLIP_SRC"  // SLIP SRC
-	SLIP_DEST = "SLIP_DEST" // SLIP DEST
-	TRANS_DUR = "TRANS_DUR" // TRANS DUR [SET]
-	CUT       = "CUT"       // CUT
-	DIS       = "DIS"       // DIS
-	SMTH_CUT  = "SMTH_CUT"  // SMTH CUT
-
-	SOURCE   = "SOURCE"   // SOURCE
-	TIMELINE = "TIMELINE" // TIMELINE
-
-	SHTL = "SHTL" // SHTL
-	JOG  = "JOG"  // JOG
-	SCRL = "SCRL" // SCRL
-
-	ESC         = "ESC"         // ESC [UNDO]
-	SYNC_BIN    = "SYNC_BIN"    // SYNC BIN
-	AUDIO_LEVEL = "AUDIO_LEVEL" // AUDIO LEVEL [MARK]
-	FULL_VIEW   = "FULL_VIEW"   // FULL VIEW [RVW]
-	TRANS       = "TRANS"       // TRANS [TITLE]
-	SPLIT       = "SPLIT"       // SPLIT [MOVE]
-	SNAP        = "SNAP"        // SNAP = "SNAP" [=]
-	RIPL_DEL    = "RIPL_DEL"    // RIPL DEL
-
-	CAM1       = "CAM1"       // CAM1
-	CAM2       = "CAM2"       // CAM2
-	CAM3       = "CAM3"       // CAM3
-	CAM4       = "CAM4"       // CAM4
-	CAM5       = "CAM5"       // CAM5
-	CAM6       = "CAM6"       // CAM6
-	CAM7       = "CAM7"       // CAM7
-	CAM8       = "CAM8"       // CAM8
-	CAM9       = "CAM9"       // CAM9
-	LIVE_OWR   = "LIVE_OWR"   // LIVE O/WR [RND]
-	VIDEO_ONLY = "VIDEO_ONLY" // VIDEO ONLY
-	AUDIO_ONLY = "AUDIO_ONLY" // AUDIO ONLY
-	STOP_PLAY  = "STOP_PLAY"  // STOP/PLAY
-)
-
 var Keys1 = map[string]Key{
-	NONE: {Name: NONE, Text: "", Id: 0x00, Led: false, JogLed: false},
-}
-
-var Keys = map[string]uint32{
-	NONE: 0x00, // /
-
-	SMART_INSRT:  0x01, // SMART INSRT [CLIP]
-	APPND:        0x02, // APPND [CLIP]
-	RIPL_OWR:     0x03, // RIPL O/WR
-	CLOSE_UP:     0x04, // CLOSE UP [YPOS]
-	PLACE_ON_TOP: 0x05, // PLACE ON TOP
-	SRC_OWR:      0x06, // SRC O/WR
-
-	IN:        0x07, // IN [CLR]
-	OUT:       0x08, // OUT [CLR]
-	TRIM_IN:   0x09, // TRIM IN
-	TRIM_OUT:  0x0a, // TRIM OUT
-	ROLL:      0x0b, // ROLL [SLIDE]
-	SLIP_SRC:  0x0c, // SLIP SRC
-	SLIP_DEST: 0x0d, // SLIP DEST
-	TRANS_DUR: 0x0e, // TRANS DUR [SET]
-	CUT:       0x0f, // CUT
-	DIS:       0x10, // DIS
-	SMTH_CUT:  0x11, // SMTH CUT
-
-	SOURCE:   0x1a, // SOURCE
-	TIMELINE: 0x1b, // TIMELINE
-
-	SHTL: 0x1c, // SHTL
-	JOG:  0x1d, // JOG
-	SCRL: 0x1e, // SCRL
-
-	ESC:         0x31, // ESC [UNDO]
-	SYNC_BIN:    0x1f, // SYNC BIN
-	AUDIO_LEVEL: 0x2c, // AUDIO LEVEL [MARK]
-	FULL_VIEW:   0x2d, // FULL VIEW [RVW]
-	TRANS:       0x22, // TRANS [TITLE]
-	SPLIT:       0x2f, // SPLIT [MOVE]
-	SNAP:        0x2e, // SNAP [=]
-	RIPL_DEL:    0x2b, // RIPL DEL
-
-	CAM1:       0x33, // CAM1
-	CAM2:       0x34, // CAM2
-	CAM3:       0x35, // CAM3
-	CAM4:       0x36, // CAM4
-	CAM5:       0x37, // CAM5
-	CAM6:       0x38, // CAM6
-	CAM7:       0x39, // CAM7
-	CAM8:       0x3a, // CAM8
-	CAM9:       0x3b, // CAM9
-	LIVE_OWR:   0x30, // LIVE O/WR [RND]
-	VIDEO_ONLY: 0x25, // VIDEO ONLY
-	AUDIO_ONLY: 0x26, // AUDIO ONLY
-	STOP_PLAY:  0x3c, // STOP/PLAY
+	NONE:         {Name: NONE, Id: ID_NONE, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_NONE, SubText: SUBTEXT_NONE},
+	SMART_INSRT:  {Name: SMART_INSRT, Id: ID_SMART_INSRT, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_SMART_INSRT, SubText: SUBTEXT_SMART_INSRT},
+	APPND:        {Name: APPND, Id: ID_APPND, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_APPND, SubText: SUBTEXT_APPND},
+	RIPL_OWR:     {Name: RIPL_OWR, Id: ID_RIPL_OWR, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_RIPL_OWR, SubText: SUBTEXT_RIPL_OWR},
+	CLOSE_UP:     {Name: CLOSE_UP, Id: ID_CLOSE_UP, Led: LED_CLOSE_UP, JogLed: LED_NONE, Text: TEXT_CLOSE_UP, SubText: SUBTEXT_CLOSE_UP},
+	PLACE_ON_TOP: {Name: PLACE_ON_TOP, Id: ID_PLACE_ON_TOP, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_PLACE_ON_TOP, SubText: SUBTEXT_PLACE_ON_TOP},
+	SRC_OWR:      {Name: SRC_OWR, Id: ID_SRC_OWR, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_SRC_OWR, SubText: SUBTEXT_SRC_OWR},
+	IN:           {Name: IN, Id: ID_IN, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_IN, SubText: SUBTEXT_IN},
+	OUT:          {Name: OUT, Id: ID_OUT, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_OUT, SubText: SUBTEXT_OUT},
+	TRIM_IN:      {Name: TRIM_IN, Id: ID_TRIM_IN, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_TRIM_IN, SubText: SUBTEXT_TRIM_IN},
+	TRIM_OUT:     {Name: TRIM_OUT, Id: ID_TRIM_OUT, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_TRIM_OUT, SubText: SUBTEXT_TRIM_OUT},
+	ROLL:         {Name: ROLL, Id: ID_ROLL, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_ROLL, SubText: SUBTEXT_ROLL},
+	SLIP_SRC:     {Name: SLIP_SRC, Id: ID_SLIP_SRC, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_SLIP_SRC, SubText: SUBTEXT_SLIP_SRC},
+	SLIP_DEST:    {Name: SLIP_DEST, Id: ID_SLIP_DEST, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_SLIP_DEST, SubText: SUBTEXT_SLIP_DEST},
+	TRANS_DUR:    {Name: TRANS_DUR, Id: ID_TRANS_DUR, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_TRANS_DUR, SubText: SUBTEXT_TRANS_DUR},
+	CUT:          {Name: CUT, Id: ID_CUT, Led: LED_CUT, JogLed: LED_NONE, Text: TEXT_CUT, SubText: SUBTEXT_CUT},
+	DIS:          {Name: DIS, Id: ID_DIS, Led: LED_DIS, JogLed: LED_NONE, Text: TEXT_DIS, SubText: SUBTEXT_DIS},
+	SMTH_CUT:     {Name: SMTH_CUT, Id: ID_SMTH_CUT, Led: LED_SMTH_CUT, JogLed: LED_NONE, Text: TEXT_SMTH_CUT, SubText: SUBTEXT_SMTH_CUT},
+	SOURCE:       {Name: SOURCE, Id: ID_SOURCE, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_SOURCE, SubText: SUBTEXT_SOURCE},
+	TIMELINE:     {Name: TIMELINE, Id: ID_TIMELINE, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_TIMELINE, SubText: SUBTEXT_TIMELINE},
+	SHTL:         {Name: SHTL, Id: ID_SHTL, Led: LED_NONE, JogLed: LED_SHTL, Text: TEXT_SHTL, SubText: SUBTEXT_SHTL},
+	JOG:          {Name: JOG, Id: ID_JOG, Led: LED_NONE, JogLed: LED_JOG, Text: TEXT_JOG, SubText: SUBTEXT_JOG},
+	SCRL:         {Name: SCRL, Id: ID_SCRL, Led: LED_NONE, JogLed: LED_SCRL, Text: TEXT_SCRL, SubText: SUBTEXT_SCRL},
+	ESC:          {Name: ESC, Id: ID_ESC, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_ESC, SubText: SUBTEXT_ESC},
+	SYNC_BIN:     {Name: SYNC_BIN, Id: ID_SYNC_BIN, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_SYNC_BIN, SubText: SUBTEXT_SYNC_BIN},
+	AUDIO_LEVEL:  {Name: AUDIO_LEVEL, Id: ID_AUDIO_LEVEL, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_AUDIO_LEVEL, SubText: SUBTEXT_AUDIO_LEVEL},
+	FULL_VIEW:    {Name: FULL_VIEW, Id: ID_FULL_VIEW, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_FULL_VIEW, SubText: SUBTEXT_FULL_VIEW},
+	TRANS:        {Name: TRANS, Id: ID_TRANS, Led: LED_TRANS, JogLed: LED_NONE, Text: TEXT_TRANS, SubText: SUBTEXT_TRANS},
+	SPLIT:        {Name: SPLIT, Id: ID_SPLIT, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_SPLIT, SubText: SUBTEXT_SPLIT},
+	SNAP:         {Name: SNAP, Id: ID_SNAP, Led: LED_SNAP, JogLed: LED_NONE, Text: TEXT_SNAP, SubText: SUBTEXT_SNAP},
+	RIPL_DEL:     {Name: RIPL_DEL, Id: ID_RIPL_DEL, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_RIPL_DEL, SubText: SUBTEXT_RIPL_DEL},
+	CAM1:         {Name: CAM1, Id: ID_CAM1, Led: LED_CAM1, JogLed: LED_NONE, Text: TEXT_CAM1, SubText: SUBTEXT_CAM1},
+	CAM2:         {Name: CAM2, Id: ID_CAM2, Led: LED_CAM2, JogLed: LED_NONE, Text: TEXT_CAM2, SubText: SUBTEXT_CAM2},
+	CAM3:         {Name: CAM3, Id: ID_CAM3, Led: LED_CAM3, JogLed: LED_NONE, Text: TEXT_CAM3, SubText: SUBTEXT_CAM3},
+	CAM4:         {Name: CAM4, Id: ID_CAM4, Led: LED_CAM4, JogLed: LED_NONE, Text: TEXT_CAM4, SubText: SUBTEXT_CAM4},
+	CAM5:         {Name: CAM5, Id: ID_CAM5, Led: LED_CAM5, JogLed: LED_NONE, Text: TEXT_CAM5, SubText: SUBTEXT_CAM5},
+	CAM6:         {Name: CAM6, Id: ID_CAM6, Led: LED_CAM6, JogLed: LED_NONE, Text: TEXT_CAM6, SubText: SUBTEXT_CAM6},
+	CAM7:         {Name: CAM7, Id: ID_CAM7, Led: LED_CAM7, JogLed: LED_NONE, Text: TEXT_CAM7, SubText: SUBTEXT_CAM7},
+	CAM8:         {Name: CAM8, Id: ID_CAM8, Led: LED_CAM8, JogLed: LED_NONE, Text: TEXT_CAM8, SubText: SUBTEXT_CAM8},
+	CAM9:         {Name: CAM9, Id: ID_CAM9, Led: LED_CAM9, JogLed: LED_NONE, Text: TEXT_CAM9, SubText: SUBTEXT_CAM9},
+	LIVE_OWR:     {Name: LIVE_OWR, Id: ID_LIVE_OWR, Led: LED_LIVE_OWR, JogLed: LED_NONE, Text: TEXT_LIVE_OWR, SubText: SUBTEXT_LIVE_OWR},
+	VIDEO_ONLY:   {Name: VIDEO_ONLY, Id: ID_VIDEO_ONLY, Led: LED_VIDEO_ONLY, JogLed: LED_NONE, Text: TEXT_VIDEO_ONLY, SubText: SUBTEXT_VIDEO_ONLY},
+	AUDIO_ONLY:   {Name: AUDIO_ONLY, Id: ID_AUDIO_ONLY, Led: LED_AUDIO_ONLY, JogLed: LED_NONE, Text: TEXT_AUDIO_ONLY, SubText: SUBTEXT_AUDIO_ONLY},
+	STOP_PLAY:    {Name: STOP_PLAY, Id: ID_STOP_PLAY, Led: LED_NONE, JogLed: LED_NONE, Text: TEXT_STOP_PLAY, SubText: SUBTEXT_STOP_PLAY},
 }
 
 type Key struct {
-	Name   string
-	Text   string
-	Id     uint32
-	Led    bool
-	JogLed bool
+	Name string
+	Id   uint32
+
+	Led    uint32
+	JogLed uint8
+
+	Text    string
+	SubText string
+
+	Row
+	Col
 }
