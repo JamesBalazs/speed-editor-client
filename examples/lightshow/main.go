@@ -7,6 +7,7 @@ import (
 	"slices"
 	"time"
 
+	speedEditor "github.com/JamesBalazs/speed-editor-client"
 	"github.com/JamesBalazs/speed-editor-client/hardware/keys"
 	"github.com/sstallion/go-hid"
 )
@@ -17,19 +18,19 @@ func main() {
 	}
 	defer hid.Exit()
 
-	speedEditor := NewSpeedEditor()
+	client := speedEditor.NewClient()
 
-	deviceInfo := speedEditor.GetDeviceInfo()
+	deviceInfo := client.GetDeviceInfo()
 
 	fmt.Printf("Manufacturer: %s\nProduct: %s\nSerial: %s\n", deviceInfo.MfrStr, deviceInfo.ProductStr, deviceInfo.SerialNbr)
 
-	speedEditor.Authenticate()
-	// speedEditor.Poll()
+	client.Authenticate()
+
 	index := 0
 	leds := slices.Collect(maps.Values(keys.Leds))
 	for {
-		time.Sleep(100 * time.Millisecond)
-		speedEditor.SetLeds(leds[0:index])
+		time.Sleep(75 * time.Millisecond)
+		client.SetLeds(leds[0:index])
 
 		if index > len(leds) {
 			index = 0

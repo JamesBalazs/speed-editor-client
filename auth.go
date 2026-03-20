@@ -2,7 +2,7 @@
 // https://github.com/smunaut/blackmagic-misc/blob/master/bmd.py
 // SPDX-License-Identifier: Apache-2.0
 
-package main
+package speedEditor
 
 import (
 	"bytes"

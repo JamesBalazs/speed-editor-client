@@ -1,4 +1,4 @@
-package main
+package speedEditor
 
 import (
 	"encoding/binary"
@@ -13,14 +13,14 @@ import (
 const VID = 0x1edb
 const PID = 0xda0e
 
-// NewSpeedEditor connects to a Speed Editor via the HID library
+// NewClient connects to a Speed Editor via the HID library
 // and returns a SpeedEditorInt to interact with the device.
 //
 // It is recommended to manually initialise the HID library before
 // creating the Speed Editor client, with `hid.Init()`.
 //
 // Ensure to use `defer hid.Exit()` to avoid memory leaks.
-func NewSpeedEditor() SpeedEditorInt {
+func NewClient() SpeedEditorInt {
 	device, err := hid.OpenFirst(VID, PID)
 	if err != nil {
 		log.Fatal(err)
@@ -52,8 +52,15 @@ type SpeedEditorInt interface {
 	// The first byte indicates which report type was received.
 	Read() ([]byte, int)
 
+	// Poll starts a Read loop, parses each input report and calls Handle on each
+	// via the Report interface.
 	Poll()
 
+	// SetLeds accepts the bitmask for a list of LEDs, and binary ORs the bitmask
+	// to enable all LEDs in the mask.
+	//
+	// SetLeds does not keep any state, so it will reset any previously enabled
+	// LEDs if they aren't included in the next call.
 	SetLeds(leds []uint32)
 }
 
@@ -123,11 +130,11 @@ func (se SpeedEditor) SetLeds(leds []uint32) {
 	payload := make([]byte, 5)
 	payload[0] = LedReportId
 
-	var bitMask uint32
-	for _, led := range leds {
-		bitMask |= led
+	var bitField uint32
+	for _, bitMask := range leds {
+		bitField |= bitMask
 	}
-	binary.LittleEndian.PutUint32(payload[1:], bitMask)
+	binary.LittleEndian.PutUint32(payload[1:], bitField)
 
 	se.device.Write(payload)
 }
