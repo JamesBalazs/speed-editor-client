@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/binary"
 	"fmt"
 	"log"
 	"time"
@@ -52,11 +53,14 @@ type SpeedEditorInt interface {
 	Read() ([]byte, int)
 
 	Poll()
+
+	SetLeds(leds []uint32)
 }
 
 type SpeedEditor struct {
 	device     *hid.Device
 	deviceInfo hid.DeviceInfo
+	activeLeds []uint32
 
 	AuthHandler AuthHandlerInt
 }
@@ -111,4 +115,19 @@ func (se SpeedEditor) Poll() {
 		report := inputReport.NewInputReport(data, len)
 		report.Handle()
 	}
+}
+
+const LedReportId = 2
+
+func (se SpeedEditor) SetLeds(leds []uint32) {
+	payload := make([]byte, 5)
+	payload[0] = LedReportId
+
+	var bitMask uint32
+	for _, led := range leds {
+		bitMask |= led
+	}
+	binary.LittleEndian.PutUint32(payload[1:], bitMask)
+
+	se.device.Write(payload)
 }

@@ -53,7 +53,11 @@ const (
 	STOP_PLAY  = "STOP_PLAY"  // STOP/PLAY
 )
 
-var Keys = map[string]uint16{
+var Keys1 = map[string]Key{
+	NONE: {Name: NONE, Text: "", Id: 0x00, Led: false, JogLed: false},
+}
+
+var Keys = map[string]uint32{
 	NONE: 0x00, // /
 
 	SMART_INSRT:  0x01, // SMART INSRT [CLIP]
@@ -104,4 +108,12 @@ var Keys = map[string]uint16{
 	VIDEO_ONLY: 0x25, // VIDEO ONLY
 	AUDIO_ONLY: 0x26, // AUDIO ONLY
 	STOP_PLAY:  0x3c, // STOP/PLAY
+}
+
+type Key struct {
+	Name   string
+	Text   string
+	Id     uint32
+	Led    bool
+	JogLed bool
 }
