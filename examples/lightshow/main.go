@@ -24,12 +24,23 @@ func main() {
 
 	client.Authenticate()
 
-	keysByPos := keys.ByPos()
+	keysByCol := keys.ByCol()
+	keysByRow := keys.ByRow()
 	for {
 		for x := 0; x < 10; x++ {
-			keysOnColumn := keysByPos[float32(x)]
+			column := keysByCol[float32(x)]
 			leds := []uint32{}
-			for _, key := range keysOnColumn {
+			for _, key := range column {
+				leds = append(leds, key.Led)
+			}
+			client.SetLeds(leds)
+			time.Sleep(75 * time.Millisecond)
+		}
+
+		for x := 0; x < 6; x++ {
+			column := keysByRow[int(x)]
+			leds := []uint32{}
+			for _, key := range column {
 				leds = append(leds, key.Led)
 			}
 			client.SetLeds(leds)

@@ -81,7 +81,7 @@ type Key struct {
 	Width float32
 }
 
-// KeysByName returns a map of keys, for contsant time lookup by their Name.
+// ByName returns a map of keys, for contsant time lookup by their Name.
 // A new map is built each time, so when you modify the returned map it
 // doesn't modify the underlying data.
 func ByName() map[string]Key {
@@ -94,7 +94,7 @@ func ByName() map[string]Key {
 	return keyIndex
 }
 
-// KeysById returns a map of keys, for contsant time lookup by their Id.
+// ById returns a map of keys, for contsant time lookup by their Id.
 // A new map is built each time, so when you modify the returned map it
 // doesn't modify the underlying data.
 func ById() map[uint32]Key {
@@ -107,7 +107,7 @@ func ById() map[uint32]Key {
 	return keyIndex
 }
 
-// KeysByLedId returns a map of keys, for contsant time lookup by their LedId.
+// ByLedId returns a map of keys, for contsant time lookup by their LedId.
 // A new map is built each time, so when you modify the returned map it
 // doesn't modify the underlying data.
 func ByLedId() map[uint32]Key {
@@ -120,7 +120,7 @@ func ByLedId() map[uint32]Key {
 	return keyIndex
 }
 
-// KeysByJogLedId returns a map of keys, for contsant time lookup by their JogLedId.
+// ByJogLedId returns a map of keys, for contsant time lookup by their JogLedId.
 // A new map is built each time, so when you modify the returned map it
 // doesn't modify the underlying data.
 func ByJogLedId() map[uint8]Key {
@@ -133,7 +133,7 @@ func ByJogLedId() map[uint8]Key {
 	return keyIndex
 }
 
-// KeysByText returns a map of keys, for contsant time lookup by their Text.
+// ByText returns a map of keys, for contsant time lookup by their Text.
 // A new map is built each time, so when you modify the returned map it
 // doesn't modify the underlying data.
 func ByText() map[string]Key {
@@ -146,7 +146,7 @@ func ByText() map[string]Key {
 	return keyIndex
 }
 
-// KeysBySubText returns a map of keys, for contsant time lookup by their SubText.
+// BySubText returns a map of keys, for contsant time lookup by their SubText.
 // A new map is built each time, so when you modify the returned map it
 // doesn't modify the underlying data.
 func BySubText() map[string]Key {
@@ -159,10 +159,11 @@ func BySubText() map[string]Key {
 	return keyIndex
 }
 
-// KeysByPos returns a map of keys, for contsant time lookup by their Pos.
+// ByCol returns a map of keys, for contsant time lookup by their X
+// and Y positions respectively.
 // A new map is built each time, so when you modify the returned map it
 // doesn't modify the underlying data.
-func ByPos() map[float32]map[int]Key {
+func ByCol() map[float32]map[int]Key {
 	keyIndex := make(map[float32]map[int]Key, 10)
 
 	for _, key := range keys {
@@ -170,6 +171,23 @@ func ByPos() map[float32]map[int]Key {
 			keyIndex[key.Col] = map[int]Key{}
 		}
 		keyIndex[key.Col][key.Row] = key
+	}
+
+	return keyIndex
+}
+
+// ByRow returns a map of keys, for contsant time lookup by their Y
+// and X positions respectively.
+// A new map is built each time, so when you modify the returned map it
+// doesn't modify the underlying data.
+func ByRow() map[int]map[float32]Key {
+	keyIndex := make(map[int]map[float32]Key, 6)
+
+	for _, key := range keys {
+		if keyIndex[key.Row] == nil {
+			keyIndex[key.Row] = map[float32]Key{}
+		}
+		keyIndex[key.Row][key.Col] = key
 	}
 
 	return keyIndex
