@@ -81,6 +81,14 @@ type Key struct {
 	Width float32
 }
 
+// KeysCopy returns a new slice of all Keys each time it is called.
+func Keys() []Key {
+	keysCopy := make([]Key, len(keys))
+	copy(keys, keysCopy)
+
+	return keysCopy
+}
+
 // ByName returns a map of keys, for contsant time lookup by their Name.
 // A new map is built each time, so when you modify the returned map it
 // doesn't modify the underlying data.
