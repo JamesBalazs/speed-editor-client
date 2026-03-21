@@ -30,20 +30,32 @@ func main() {
 		for x := 0; x < 10; x++ {
 			column := keysByCol[float32(x)]
 			leds := []uint32{}
+			jogLeds := []uint8{}
 			for _, key := range column {
-				leds = append(leds, key.Led)
+				if x >= 7 {
+					jogLeds = append(jogLeds, key.JogLed)
+				} else {
+					leds = append(leds, key.Led)
+				}
 			}
 			client.SetLeds(leds)
+			client.SetJogLeds(jogLeds)
 			time.Sleep(75 * time.Millisecond)
 		}
 
-		for x := 0; x < 6; x++ {
-			column := keysByRow[int(x)]
+		for y := 0; y < 6; y++ {
+			row := keysByRow[int(y)]
 			leds := []uint32{}
-			for _, key := range column {
-				leds = append(leds, key.Led)
+			jogLeds := []uint8{}
+			for x, key := range row {
+				if x >= 7 {
+					jogLeds = append(jogLeds, key.JogLed)
+				} else {
+					leds = append(leds, key.Led)
+				}
 			}
 			client.SetLeds(leds)
+			client.SetJogLeds(jogLeds)
 			time.Sleep(75 * time.Millisecond)
 		}
 	}

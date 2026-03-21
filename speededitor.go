@@ -62,6 +62,21 @@ type SpeedEditorInt interface {
 	// SetLeds does not keep any state, so it will reset any previously enabled
 	// LEDs if they aren't included in the next call.
 	SetLeds(leds []uint32)
+
+	// SetJogMode switches between the 4 jog modes:
+	// RELATIVE - Relative position
+	// ABSOLUTE - Absolute position from -4096 to 4096
+	// RELATIVE2 - Relative position, I think this is used to enable a faster scroll mode when the SCRL button is pressed twice in Resolve: https://www.reddit.com/r/blackmagicdesign/comments/1dv56d4/speed_editor_firmware_update_dial_speed_change/
+	// ABSOLUTE_0 - Absolute position from -4096 to 4096 with deadzone around 0
+	SetJogMode(mode uint8)
+
+	// SetJogLeds accepts the bitmask for a list of LEDs, and binary ORs the bitmask
+	// to enable all LEDs in the mask. Jog LEDs are on a separate system, and overlap
+	// with some of the normal LED IDs so we need a separate message to enable them.
+	//
+	// SetJogLeds does not keep any state, so it will reset any previously enabled
+	// LEDs if they aren't included in the next call.
+	SetJogLeds(leds []uint8)
 }
 
 type SpeedEditor struct {
@@ -135,6 +150,33 @@ func (se SpeedEditor) SetLeds(leds []uint32) {
 		bitField |= bitMask
 	}
 	binary.LittleEndian.PutUint32(payload[1:], bitField)
+
+	se.device.Write(payload)
+}
+
+const JogModeReportId = 3
+
+func (se SpeedEditor) SetJogMode(mode uint8) {
+	payload := make([]byte, 7)
+	payload[0] = JogModeReportId
+	payload[1] = mode
+	// bytes 3-6 are zero
+	payload[6] = 255 // byte 7 has unknown purpose
+
+	se.device.Write(payload)
+}
+
+const JogLedReportId = 4
+
+func (se SpeedEditor) SetJogLeds(leds []uint8) {
+	payload := make([]byte, 2)
+	payload[0] = JogLedReportId
+
+	var bitField uint8
+	for _, bitMask := range leds {
+		bitField |= bitMask
+	}
+	payload[1] = bitField
 
 	se.device.Write(payload)
 }
