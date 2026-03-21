@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"maps"
-	"slices"
 	"time"
 
 	speedEditor "github.com/JamesBalazs/speed-editor-client"
@@ -26,16 +24,16 @@ func main() {
 
 	client.Authenticate()
 
-	index := 0
-	leds := slices.Collect(maps.Values(keys.Leds))
+	keysByPos := keys.ByPos()
 	for {
-		time.Sleep(75 * time.Millisecond)
-		client.SetLeds(leds[0:index])
-
-		if index > len(leds) {
-			index = 0
-		} else {
-			index += 1
+		for x := 0; x < 10; x++ {
+			keysOnColumn := keysByPos[float32(x)]
+			leds := []uint32{}
+			for _, key := range keysOnColumn {
+				leds = append(leds, key.Led)
+			}
+			client.SetLeds(leds)
+			time.Sleep(75 * time.Millisecond)
 		}
 	}
 }
