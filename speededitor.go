@@ -10,8 +10,14 @@ import (
 	"github.com/sstallion/go-hid"
 )
 
-const VID = 0x1edb
-const PID = 0xda0e
+const (
+	VID = 0x1edb
+	PID = 0xda0e
+
+	LedReportId     = 2
+	JogModeReportId = 3
+	JogLedReportId  = 4
+)
 
 // NewClient connects to a Speed Editor via the HID library
 // and returns a SpeedEditorInt to interact with the device.
@@ -77,6 +83,16 @@ type SpeedEditorInt interface {
 	// SetJogLeds does not keep any state, so it will reset any previously enabled
 	// LEDs if they aren't included in the next call.
 	SetJogLeds(leds []uint8)
+
+	// SetJogHandler allows replacing the handler function that will be called on Poll()
+	// when a JogReport is received.
+	SetJogHandler(handler func(*SpeedEditor, inputReport.JogReport))
+	// SetBatteryHandler allows replacing the handler function that will be called on Poll()
+	// when a BatteryReport is received.
+	SetBatteryHandler(handler func(*SpeedEditor, inputReport.BatteryReport))
+	// SetKeyPressHandler allows replacing the handler function that will be called on Poll()
+	// when a KeyPressReport is received.
+	SetKeyPressHandler(handler func(*SpeedEditor, inputReport.KeyPressReport))
 }
 
 type SpeedEditor struct {
@@ -85,6 +101,10 @@ type SpeedEditor struct {
 	activeLeds []uint32
 
 	AuthHandler AuthHandlerInt
+
+	jogHandler      func(*SpeedEditor, inputReport.JogReport)
+	batteryHandler  func(*SpeedEditor, inputReport.BatteryReport)
+	keyPressHandler func(*SpeedEditor, inputReport.KeyPressReport)
 }
 
 // initialize grabs the device's serial number, manufacturer string etc via HID.
@@ -96,6 +116,10 @@ func (se *SpeedEditor) initialize() {
 	}
 
 	se.deviceInfo = *deviceInfo
+
+	se.SetJogHandler(defaultJogHandler)
+	se.SetBatteryHandler(defaultBatteryHandler)
+	se.SetKeyPressHandler(defaultKeyPressHandler)
 }
 
 func (se SpeedEditor) Authenticate() {
@@ -121,7 +145,7 @@ func (se SpeedEditor) GetDeviceInfo() hid.DeviceInfo {
 }
 
 func (se SpeedEditor) Read() ([]byte, int) {
-	data := make([]byte, 16)
+	data := make([]byte, 9)
 	len, err := se.device.Read(data)
 
 	if err != nil {
@@ -133,13 +157,22 @@ func (se SpeedEditor) Read() ([]byte, int) {
 
 func (se SpeedEditor) Poll() {
 	for {
-		data, len := se.Read()
-		report := inputReport.NewInputReport(data, len)
-		report.Handle()
+		data, _ := se.Read()
+		report := inputReport.InputReportBytes(data).ToReport()
+		se.HandleReport(report)
 	}
 }
 
-const LedReportId = 2
+func (se SpeedEditor) HandleReport(genericReport any) {
+	switch report := genericReport.(type) {
+	case inputReport.JogReport:
+		se.HandleJog(report)
+	case inputReport.BatteryReport:
+		se.HandleBattery(report)
+	case inputReport.KeyPressReport:
+		se.HandleKeyPress(report)
+	} // TODO handle unknown reports (log error and continue)
+}
 
 func (se SpeedEditor) SetLeds(leds []uint32) {
 	payload := make([]byte, 5)
@@ -154,8 +187,6 @@ func (se SpeedEditor) SetLeds(leds []uint32) {
 	se.device.Write(payload)
 }
 
-const JogModeReportId = 3
-
 func (se SpeedEditor) SetJogMode(mode uint8) {
 	payload := make([]byte, 7)
 	payload[0] = JogModeReportId
@@ -165,8 +196,6 @@ func (se SpeedEditor) SetJogMode(mode uint8) {
 
 	se.device.Write(payload)
 }
-
-const JogLedReportId = 4
 
 func (se SpeedEditor) SetJogLeds(leds []uint8) {
 	payload := make([]byte, 2)
@@ -179,4 +208,28 @@ func (se SpeedEditor) SetJogLeds(leds []uint8) {
 	payload[1] = bitField
 
 	se.device.Write(payload)
+}
+
+func (se *SpeedEditor) SetJogHandler(handler func(*SpeedEditor, inputReport.JogReport)) {
+	se.jogHandler = handler
+}
+
+func (se *SpeedEditor) SetBatteryHandler(handler func(*SpeedEditor, inputReport.BatteryReport)) {
+	se.batteryHandler = handler
+}
+
+func (se *SpeedEditor) SetKeyPressHandler(handler func(*SpeedEditor, inputReport.KeyPressReport)) {
+	se.keyPressHandler = handler
+}
+
+func (se SpeedEditor) HandleJog(report inputReport.JogReport) {
+	se.jogHandler(&se, report)
+}
+
+func (se SpeedEditor) HandleBattery(report inputReport.BatteryReport) {
+	se.batteryHandler(&se, report)
+}
+
+func (se SpeedEditor) HandleKeyPress(report inputReport.KeyPressReport) {
+	se.keyPressHandler(&se, report)
 }

@@ -1,13 +1,12 @@
 package inputReport
 
 import (
-	"fmt"
 	"log"
 )
 
-func NewBatteryReport(id byte, payload []byte, length int) ReportInt {
-	if id != ReportBattery || length != 2 || len(payload) != length {
-		log.Fatalf("malformed battery stats report id: %v payload: %v len: %d", id, payload, length)
+func NewBatteryReport(id byte, payload []byte) BatteryReport {
+	if id != ReportBattery {
+		log.Fatalf("malformed battery stats report id: %v payload: %v", id, payload)
 	}
 
 	return BatteryReport{
@@ -21,10 +20,4 @@ type BatteryReport struct {
 	Id       uint8
 	Charging bool
 	Battery  float32
-}
-
-func (report BatteryReport) Handle() {
-	fmt.Printf("got battery %v %f\n", report.Charging, report.Battery)
-
-	return // TODO implement handler
 }

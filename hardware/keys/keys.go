@@ -68,7 +68,7 @@ var (
 
 type Key struct {
 	Name string
-	Id   uint32
+	Id   uint16
 
 	Led    uint32
 	JogLed uint8
@@ -90,8 +90,8 @@ func Keys() []Key {
 }
 
 // ByName returns a map of keys, for contsant time lookup by their Name.
-// A new map is built each time, so when you modify the returned map it
-// doesn't modify the underlying data.
+// A new copy of the map is returned each time, so when the consumer modifies
+// the map it doesn't modify the underlying data.
 func ByName() map[string]Key {
 	keyIndex := make(map[string]Key, 43)
 
@@ -103,10 +103,10 @@ func ByName() map[string]Key {
 }
 
 // ById returns a map of keys, for contsant time lookup by their Id.
-// A new map is built each time, so when you modify the returned map it
-// doesn't modify the underlying data.
-func ById() map[uint32]Key {
-	keyIndex := make(map[uint32]Key, 43)
+// A new copy of the map is returned each time, so when the consumer modifies
+// the map it doesn't modify the underlying data.
+func ById() map[uint16]Key {
+	keyIndex := make(map[uint16]Key, 43)
 
 	for _, key := range keys {
 		keyIndex[key.Id] = key
@@ -116,8 +116,8 @@ func ById() map[uint32]Key {
 }
 
 // ByLedId returns a map of keys, for contsant time lookup by their LedId.
-// A new map is built each time, so when you modify the returned map it
-// doesn't modify the underlying data.
+// A new copy of the map is returned each time, so when the consumer modifies
+// the map it doesn't modify the underlying data.
 func ByLedId() map[uint32]Key {
 	keyIndex := make(map[uint32]Key, 43)
 
@@ -129,8 +129,8 @@ func ByLedId() map[uint32]Key {
 }
 
 // ByJogLedId returns a map of keys, for contsant time lookup by their JogLedId.
-// A new map is built each time, so when you modify the returned map it
-// doesn't modify the underlying data.
+// A new copy of the map is returned each time, so when the consumer modifies
+// the map it doesn't modify the underlying data.
 func ByJogLedId() map[uint8]Key {
 	keyIndex := make(map[uint8]Key, 43)
 
@@ -142,8 +142,8 @@ func ByJogLedId() map[uint8]Key {
 }
 
 // ByText returns a map of keys, for contsant time lookup by their Text.
-// A new map is built each time, so when you modify the returned map it
-// doesn't modify the underlying data.
+// A new copy of the map is returned each time, so when the consumer modifies
+// the map it doesn't modify the underlying data.
 func ByText() map[string]Key {
 	keyIndex := make(map[string]Key, 43)
 
@@ -155,8 +155,8 @@ func ByText() map[string]Key {
 }
 
 // BySubText returns a map of keys, for contsant time lookup by their SubText.
-// A new map is built each time, so when you modify the returned map it
-// doesn't modify the underlying data.
+// A new copy of the map is returned each time, so when the consumer modifies
+// the map it doesn't modify the underlying data.
 func BySubText() map[string]Key {
 	keyIndex := make(map[string]Key, 43)
 
@@ -169,8 +169,8 @@ func BySubText() map[string]Key {
 
 // ByCol returns a map of keys, for contsant time lookup by their X
 // and Y positions respectively.
-// A new map is built each time, so when you modify the returned map it
-// doesn't modify the underlying data.
+// A new copy of the map is returned each time, so when the consumer modifies
+// the map it doesn't modify the underlying data.
 func ByCol() map[float32]map[int]Key {
 	keyIndex := make(map[float32]map[int]Key, 10)
 
@@ -186,8 +186,8 @@ func ByCol() map[float32]map[int]Key {
 
 // ByRow returns a map of keys, for contsant time lookup by their Y
 // and X positions respectively.
-// A new map is built each time, so when you modify the returned map it
-// doesn't modify the underlying data.
+// A new copy of the map is returned each time, so when the consumer modifies
+// the map it doesn't modify the underlying data.
 func ByRow() map[int]map[float32]Key {
 	keyIndex := make(map[int]map[float32]Key, 6)
 

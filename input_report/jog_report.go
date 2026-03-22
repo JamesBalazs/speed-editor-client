@@ -2,13 +2,12 @@ package inputReport
 
 import (
 	"encoding/binary"
-	"fmt"
 	"log"
 )
 
-func NewJogReport(id byte, payload []byte, length int) ReportInt {
-	if id != ReportJog || length != 6 || len(payload) != length {
-		log.Fatalf("malformed jog input report id: %v payload: %v len: %d", id, payload, length)
+func NewJogReport(id byte, payload []byte) JogReport {
+	if id != ReportJog {
+		log.Fatalf("malformed jog input report id: %v payload: %", id, payload)
 	}
 
 	return JogReport{
@@ -24,10 +23,4 @@ type JogReport struct {
 	Mode    uint8
 	Value   int32
 	Unknown uint8
-}
-
-func (report JogReport) Handle() {
-	fmt.Printf("got jog mode %d pos %d\n", report.Mode, report.Value)
-
-	return // TODO implement handler
 }

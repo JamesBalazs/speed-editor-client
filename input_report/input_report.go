@@ -1,6 +1,14 @@
 package inputReport
 
-import "fmt"
+import (
+	"github.com/JamesBalazs/speed-editor-client/hardware/keys"
+)
+
+func init() {
+	// Cache constant-time key index so we don't copy-on-read
+	// every time a handler wants to look up a key.
+	keysById = keys.ById()
+}
 
 const (
 	ReportJog      = 3
@@ -8,23 +16,26 @@ const (
 	ReportBattery  = 7
 )
 
-func NewInputReport(raw []byte, len int) ReportInt {
-	id := raw[0]
-	payload := raw[1:len]
-	len = len - 1
+var (
+	keysById = map[uint16]keys.Key{}
+)
+
+type InputReportBytes []byte
+
+func (byt InputReportBytes) ToReport() any {
+	id := byt[0]
+	payload := byt[1:]
 
 	switch id {
 	case ReportJog:
-		return NewJogReport(id, payload, len)
+		return NewJogReport(id, payload)
 	case ReportKeyPress:
-		return NewKeyPressReport(id, payload, len)
+		return NewKeyPressReport(id, payload)
 	case ReportBattery:
-		return NewBatteryReport(id, payload, len)
+		return NewBatteryReport(id, payload)
 	default:
-		fmt.Printf("fell through id: %d len: %d data: %v\n", id, len, payload)
 		return nil
 	}
-
 }
 
 type ReportInt interface {
