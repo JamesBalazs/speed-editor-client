@@ -5,21 +5,25 @@ import (
 	inputReport "github.com/JamesBalazs/speed-editor-client/input_report"
 )
 
-func defaultJogHandler(se *SpeedEditor, report inputReport.JogReport) {
+func defaultJogHandler(client SpeedEditorInt, report inputReport.JogReport) {
 
 }
 
-func defaultBatteryHandler(se *SpeedEditor, report inputReport.BatteryReport) {
+func defaultBatteryHandler(client SpeedEditorInt, report inputReport.BatteryReport) {
 
 }
 
-func defaultKeyPressHandler(se *SpeedEditor, report inputReport.KeyPressReport) {
+func defaultKeyPressHandler(client SpeedEditorInt, report inputReport.KeyPressReport) {
 	for _, key := range report.Keys {
 		if key.Led != keys.LED_NONE {
-			se.SetLeds([]uint32{key.Led})
+			client.SetLeds([]uint32{key.Led})
 		}
 		if key.JogLed != keys.LED_NONE {
-			se.SetJogLeds([]uint8{key.JogLed})
+			client.SetJogLeds([]uint8{key.JogLed})
 		}
 	}
 }
+
+func NullJogHandler(client SpeedEditorInt, report inputReport.JogReport)           {}
+func NullBatteryHandler(client SpeedEditorInt, report inputReport.BatteryReport)   {}
+func NullKeyPressHandler(client SpeedEditorInt, report inputReport.KeyPressReport) {}

@@ -27,7 +27,7 @@ func main() {
 	keysByCol := keys.ByCol()
 	keysByRow := keys.ByRow()
 	for {
-		for x := 0; x < 10; x++ {
+		for x := range 10 {
 			column := keysByCol[float32(x)]
 			leds := []uint32{}
 			jogLeds := []uint8{}
@@ -43,7 +43,7 @@ func main() {
 			time.Sleep(75 * time.Millisecond)
 		}
 
-		for y := 0; y < 6; y++ {
+		for y := range 6 {
 			row := keysByRow[int(y)]
 			leds := []uint32{}
 			jogLeds := []uint8{}

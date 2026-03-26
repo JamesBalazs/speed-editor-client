@@ -86,13 +86,13 @@ type SpeedEditorInt interface {
 
 	// SetJogHandler allows replacing the handler function that will be called on Poll()
 	// when a JogReport is received.
-	SetJogHandler(handler func(*SpeedEditor, inputReport.JogReport))
+	SetJogHandler(handler func(SpeedEditorInt, inputReport.JogReport))
 	// SetBatteryHandler allows replacing the handler function that will be called on Poll()
 	// when a BatteryReport is received.
-	SetBatteryHandler(handler func(*SpeedEditor, inputReport.BatteryReport))
+	SetBatteryHandler(handler func(SpeedEditorInt, inputReport.BatteryReport))
 	// SetKeyPressHandler allows replacing the handler function that will be called on Poll()
 	// when a KeyPressReport is received.
-	SetKeyPressHandler(handler func(*SpeedEditor, inputReport.KeyPressReport))
+	SetKeyPressHandler(handler func(SpeedEditorInt, inputReport.KeyPressReport))
 }
 
 type SpeedEditor struct {
@@ -102,9 +102,9 @@ type SpeedEditor struct {
 
 	AuthHandler AuthHandlerInt
 
-	jogHandler      func(*SpeedEditor, inputReport.JogReport)
-	batteryHandler  func(*SpeedEditor, inputReport.BatteryReport)
-	keyPressHandler func(*SpeedEditor, inputReport.KeyPressReport)
+	jogHandler      func(SpeedEditorInt, inputReport.JogReport)
+	batteryHandler  func(SpeedEditorInt, inputReport.BatteryReport)
+	keyPressHandler func(SpeedEditorInt, inputReport.KeyPressReport)
 }
 
 // initialize grabs the device's serial number, manufacturer string etc via HID.
@@ -210,15 +210,15 @@ func (se SpeedEditor) SetJogLeds(leds []uint8) {
 	se.device.Write(payload)
 }
 
-func (se *SpeedEditor) SetJogHandler(handler func(*SpeedEditor, inputReport.JogReport)) {
+func (se *SpeedEditor) SetJogHandler(handler func(SpeedEditorInt, inputReport.JogReport)) {
 	se.jogHandler = handler
 }
 
-func (se *SpeedEditor) SetBatteryHandler(handler func(*SpeedEditor, inputReport.BatteryReport)) {
+func (se *SpeedEditor) SetBatteryHandler(handler func(SpeedEditorInt, inputReport.BatteryReport)) {
 	se.batteryHandler = handler
 }
 
-func (se *SpeedEditor) SetKeyPressHandler(handler func(*SpeedEditor, inputReport.KeyPressReport)) {
+func (se *SpeedEditor) SetKeyPressHandler(handler func(SpeedEditorInt, inputReport.KeyPressReport)) {
 	se.keyPressHandler = handler
 }
 
