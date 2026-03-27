@@ -14,6 +14,16 @@ In the examples folder, there are a few projects to get you started:
 - [keypress](https://github.com/JamesBalazs/speed-editor-client/blob/main/examples/keypress/main.go) sets a custom keypress handler, which illuminates the LEDs of the last pressed key
 - [reset](https://github.com/JamesBalazs/speed-editor-client/blob/main/examples/reset/main.go) switches off the LEDs
 
+## Documentation
+
+View docs on pkg.go.dev:
+
+- [client](https://pkg.go.dev/github.com/JamesBalazs/speed-editor-client)
+  - [auth](https://pkg.go.dev/github.com/JamesBalazs/speed-editor-client/auth)
+  - [input](https://pkg.go.dev/github.com/JamesBalazs/speed-editor-client/input)
+  - [jog_modes](https://pkg.go.dev/github.com/JamesBalazs/speed-editor-client/jog_modes)
+  - [keys](https://pkg.go.dev/github.com/JamesBalazs/speed-editor-client/keys)
+
 ## Usage
 
 To import as a dependency:
