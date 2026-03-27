@@ -53,6 +53,7 @@ fmt.Printf("Manufacturer: %s\nProduct: %s\nSerial: %s\n", deviceInfo.MfrStr, dev
 
 Which will output something like:
 > Product: DaVinci Resolve Speed Editor
+
 > Serial: 1234567890ABCDEFGHIJKLMNOPQRSTUV
 
 The Speed Editor won't work without the correct auth handshake. Luckily for us [Sylvain Munaut reverse engineered and implemented the handshake here](https://github.com/smunaut/blackmagic-misc/blob/master/bmd.py#L133) all the way back in 2021, and published the code under an Apache 2.0 License for the benefit of others.
@@ -162,6 +163,37 @@ $HOME/go/bin/lshid
 ```
 Should output something like `/dev/hidraw0: ID 1edb:da0e Blackmagic Design DaVinci Resolve Speed Editor`
 
+You can also get a list of keys and their attributes, with deterministic ordering:
+
+```
+keys.Get()
+```
+
+And maps / indexes of keys by name, ID, LED ID etc so you can easily retrieve key details given only a single attribute, in constant time:
+
+```
+keys.ById()
+keys.ByName()
+keys.ByLedId()
+keys.ByJogLedId()
+keys.ByText()
+keys.BySubText()
+keys.ByCol()
+keys.ByRow()
+```
+
+The same goes for jog modes:
+
+```
+jogModes.Get()
+
+jogModes.ById()
+jogModes.ByName()
+```
+
+All of the above getters do a "copy on read" so it's a good idea to grab them once, store in a variable and refer to the variable rather than grabbing another copy.
+
+This is done since manipulating the maps could mess up the underlying key data in the library, since maps store references to the underlying data. By copying on read, you get a different copy of the data in the map at the expense of a small performance hit.
 
 ### Deps
 
