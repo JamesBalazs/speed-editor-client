@@ -1,4 +1,4 @@
-package inputReport
+package input
 
 import (
 	"log"

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	speedEditor "github.com/JamesBalazs/speed-editor-client"
-	"github.com/JamesBalazs/speed-editor-client/hardware/keys"
+	"github.com/JamesBalazs/speed-editor-client/keys"
 	"github.com/sstallion/go-hid"
 )
 

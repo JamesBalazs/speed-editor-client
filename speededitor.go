@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	inputReport "github.com/JamesBalazs/speed-editor-client/input_report"
+	"github.com/JamesBalazs/speed-editor-client/input"
 	"github.com/sstallion/go-hid"
 )
 
@@ -86,13 +86,13 @@ type SpeedEditorInt interface {
 
 	// SetJogHandler allows replacing the handler function that will be called on Poll()
 	// when a JogReport is received.
-	SetJogHandler(handler func(SpeedEditorInt, inputReport.JogReport))
+	SetJogHandler(handler func(SpeedEditorInt, input.JogReport))
 	// SetBatteryHandler allows replacing the handler function that will be called on Poll()
 	// when a BatteryReport is received.
-	SetBatteryHandler(handler func(SpeedEditorInt, inputReport.BatteryReport))
+	SetBatteryHandler(handler func(SpeedEditorInt, input.BatteryReport))
 	// SetKeyPressHandler allows replacing the handler function that will be called on Poll()
 	// when a KeyPressReport is received.
-	SetKeyPressHandler(handler func(SpeedEditorInt, inputReport.KeyPressReport))
+	SetKeyPressHandler(handler func(SpeedEditorInt, input.KeyPressReport))
 }
 
 type SpeedEditor struct {
@@ -102,9 +102,9 @@ type SpeedEditor struct {
 
 	AuthHandler AuthHandlerInt
 
-	jogHandler      func(SpeedEditorInt, inputReport.JogReport)
-	batteryHandler  func(SpeedEditorInt, inputReport.BatteryReport)
-	keyPressHandler func(SpeedEditorInt, inputReport.KeyPressReport)
+	jogHandler      func(SpeedEditorInt, input.JogReport)
+	batteryHandler  func(SpeedEditorInt, input.BatteryReport)
+	keyPressHandler func(SpeedEditorInt, input.KeyPressReport)
 }
 
 // initialize grabs the device's serial number, manufacturer string etc via HID.
@@ -158,18 +158,18 @@ func (se SpeedEditor) Read() ([]byte, int) {
 func (se SpeedEditor) Poll() {
 	for {
 		data, _ := se.Read()
-		report := inputReport.InputReportBytes(data).ToReport()
+		report := input.ReportBytes(data).ToReport()
 		se.HandleReport(report)
 	}
 }
 
 func (se SpeedEditor) HandleReport(genericReport any) {
 	switch report := genericReport.(type) {
-	case inputReport.JogReport:
+	case input.JogReport:
 		se.HandleJog(report)
-	case inputReport.BatteryReport:
+	case input.BatteryReport:
 		se.HandleBattery(report)
-	case inputReport.KeyPressReport:
+	case input.KeyPressReport:
 		se.HandleKeyPress(report)
 	} // TODO handle unknown reports (log error and continue)
 }
@@ -210,26 +210,26 @@ func (se SpeedEditor) SetJogLeds(leds []uint8) {
 	se.device.Write(payload)
 }
 
-func (se *SpeedEditor) SetJogHandler(handler func(SpeedEditorInt, inputReport.JogReport)) {
+func (se *SpeedEditor) SetJogHandler(handler func(SpeedEditorInt, input.JogReport)) {
 	se.jogHandler = handler
 }
 
-func (se *SpeedEditor) SetBatteryHandler(handler func(SpeedEditorInt, inputReport.BatteryReport)) {
+func (se *SpeedEditor) SetBatteryHandler(handler func(SpeedEditorInt, input.BatteryReport)) {
 	se.batteryHandler = handler
 }
 
-func (se *SpeedEditor) SetKeyPressHandler(handler func(SpeedEditorInt, inputReport.KeyPressReport)) {
+func (se *SpeedEditor) SetKeyPressHandler(handler func(SpeedEditorInt, input.KeyPressReport)) {
 	se.keyPressHandler = handler
 }
 
-func (se SpeedEditor) HandleJog(report inputReport.JogReport) {
+func (se SpeedEditor) HandleJog(report input.JogReport) {
 	se.jogHandler(&se, report)
 }
 
-func (se SpeedEditor) HandleBattery(report inputReport.BatteryReport) {
+func (se SpeedEditor) HandleBattery(report input.BatteryReport) {
 	se.batteryHandler(&se, report)
 }
 
-func (se SpeedEditor) HandleKeyPress(report inputReport.KeyPressReport) {
+func (se SpeedEditor) HandleKeyPress(report input.KeyPressReport) {
 	se.keyPressHandler(&se, report)
 }

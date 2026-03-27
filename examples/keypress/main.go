@@ -5,6 +5,8 @@ import (
 	"log"
 
 	speedEditor "github.com/JamesBalazs/speed-editor-client"
+	"github.com/JamesBalazs/speed-editor-client/input"
+	"github.com/JamesBalazs/speed-editor-client/keys"
 	"github.com/sstallion/go-hid"
 )
 
@@ -22,5 +24,18 @@ func main() {
 
 	client.Authenticate()
 
+	client.SetKeyPressHandler(customKeyPressHandler)
+
 	client.Poll()
+}
+
+func customKeyPressHandler(client speedEditor.SpeedEditorInt, report input.KeyPressReport) {
+	for _, key := range report.Keys {
+		if key.Led != keys.LED_NONE {
+			client.SetLeds([]uint32{key.Led})
+		}
+		if key.JogLed != keys.LED_NONE {
+			client.SetJogLeds([]uint8{key.JogLed})
+		}
+	}
 }

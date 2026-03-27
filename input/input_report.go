@@ -1,7 +1,7 @@
-package inputReport
+package input
 
 import (
-	"github.com/JamesBalazs/speed-editor-client/hardware/keys"
+	"github.com/JamesBalazs/speed-editor-client/keys"
 )
 
 func init() {
@@ -20,9 +20,9 @@ var (
 	keysById = map[uint16]keys.Key{}
 )
 
-type InputReportBytes []byte
+type ReportBytes []byte
 
-func (byt InputReportBytes) ToReport() any {
+func (byt ReportBytes) ToReport() any {
 	id := byt[0]
 	payload := byt[1:]
 

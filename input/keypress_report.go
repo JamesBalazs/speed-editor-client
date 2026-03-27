@@ -1,10 +1,10 @@
-package inputReport
+package input
 
 import (
 	"encoding/binary"
 	"log"
 
-	"github.com/JamesBalazs/speed-editor-client/hardware/keys"
+	"github.com/JamesBalazs/speed-editor-client/keys"
 )
 
 func NewKeyPressReport(id byte, payload []byte) KeyPressReport {

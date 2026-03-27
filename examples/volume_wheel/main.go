@@ -6,9 +6,9 @@ import (
 	"math"
 
 	speedEditor "github.com/JamesBalazs/speed-editor-client"
-	"github.com/JamesBalazs/speed-editor-client/hardware"
-	"github.com/JamesBalazs/speed-editor-client/hardware/keys"
-	inputReport "github.com/JamesBalazs/speed-editor-client/input_report"
+	"github.com/JamesBalazs/speed-editor-client/input"
+	jogModes "github.com/JamesBalazs/speed-editor-client/jog_modes"
+	"github.com/JamesBalazs/speed-editor-client/keys"
 	"github.com/itchyny/volume-go"
 	"github.com/sstallion/go-hid"
 )
@@ -31,15 +31,15 @@ func main() {
 
 	client.Authenticate()
 
-	client.SetJogMode(hardware.JOGMODE_ABSOLUTE)
+	client.SetJogMode(jogModes.ID_ABSOLUTE)
 	client.SetJogHandler(customJogHandler)
 	client.SetKeyPressHandler(speedEditor.NullKeyPressHandler)
 
 	client.Poll()
 }
 
-func customJogHandler(client speedEditor.SpeedEditorInt, report inputReport.JogReport) {
-	percent := (float64(report.Value) + 4096) / 8192
+func customJogHandler(client speedEditor.SpeedEditorInt, report input.JogReport) {
+	percent := (float64(report.Value) + jogModes.ABSOLUTE_MAX) / (jogModes.ABSOLUTE_MAX * 2)
 	setLeds(client, percent)
 	vol := int(math.Ceil(percent * 100))
 	volume.SetVolume(vol)

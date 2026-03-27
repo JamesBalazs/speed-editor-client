@@ -6,6 +6,14 @@ There are a few existing solutions in Python, but these are not really designed 
 require the user to install Python, dependencies etc. I wanted a more polished solution in a compiled language, that anyone can use to exapnd the functionality
 of this hardware.
 
+## Examples
+
+In the examples folder, there are a few projects to get you started:
+- [volume wheel](https://github.com/JamesBalazs/speed-editor-client/blob/main/examples/volume_wheel/main.go) uses the Jog wheel as a volume controller for Windows, Mac and Linux
+- [lightshow](https://github.com/JamesBalazs/speed-editor-client/blob/main/examples/lightshow/main.go) flashes all the LEDs in each column, then all the LEDs in each row, alternating
+- [keypress](https://github.com/JamesBalazs/speed-editor-client/blob/main/examples/keypress/main.go) sets a custom keypress handler, which illuminates the LEDs of the last pressed key
+- [reset](https://github.com/JamesBalazs/speed-editor-client/blob/main/examples/reset/main.go) switches off the LEDs
+
 ## Usage
 
 To import as a dependency:
@@ -14,7 +22,7 @@ To import as a dependency:
 go get github.com/JamesBalazs/speed-editor-client
 ```
 
-The project depends on the go-hid library.
+The project depends on the [go-hid](https://github.com/sstallion/go-hid) library.
 
 Before creating a Speed Editor client, we need to initialize the HID library:
 
@@ -68,13 +76,13 @@ When any of the aforementioned events happen, the corresponding Handler function
 The event handlers can be overridden by the user to implement custom functionality:
 
 ```
-func customJogHandler(client speedEditor.SpeedEditorInt, report inputReport.JogReport) {
+func customJogHandler(client speedEditor.SpeedEditorInt, report input.JogReport) {
   fmt.Printf("Jog wheel position: %d\n", report.Value)
 }
 
 client.SetJogHandler(customJogHandler)
 
-func customKeyPressHandler(client speedEditor.SpeedEditorInt, report inputReport.KeyPressReport) {
+func customKeyPressHandler(client speedEditor.SpeedEditorInt, report input.KeyPressReport) {
   for _, key := range report.Keys {
     fmt.Printf("Keys pressed: %s", key.Name)
   }
@@ -82,7 +90,7 @@ func customKeyPressHandler(client speedEditor.SpeedEditorInt, report inputReport
 
 client.SetKeyPressHandler(customKeyPressHandler)
 
-func customBatteryHandler(client speedEditor.SpeedEditorInt, report inputReport.BatteryReport) {
+func customBatteryHandler(client speedEditor.SpeedEditorInt, report input.BatteryReport) {
   fmt.Printf("Battery level: %d", report.Battery)
 }
 ```
@@ -103,26 +111,26 @@ client.SetLeds(leds)
 client.SetJogLeds(jogLeds)
 ```
 
-JOG/SCRL/SHTL are on a different system to the other LEDs, so a different function is required to light them.
+`JOG`/`SCRL`/`SHTL` are on a different system to the other LEDs, so a different function is required to light them.
 
 Finally, there are a few different jog modes available on the device:
 
-- JOGMODE_RELATIVE
+- `RELATIVE`
   - Reports relative position, since last report
-- JOGMODE_ABSOLUTE
+- `ABSOLUTE`
   - Reports absolute position, where 0 is the position when the mode was set. -4096 -> 4096 = 180deg
-- JOGMODE_RELATIVE_2
-  - Same as JOGMODE_RELATIVE, but I think Davinci Resolve uses this to enable faster scrolling when jog is double pressed in later versions (according to one obscure forum post). You could replicate this in software by applying some multiplier to the relative position received from the device (or use it for any feature you like)
-- JOGMODE_ABSOLUTE_DEADZONE
-  - Same as JOGMODE_ABSOLUTE but with a deadzone around 0, so less sensitive to accidental knocks / easier to reset to 0
+- `RELATIVE_2`
+  - Same as `RELATIVE`, but I think Davinci Resolve uses this to enable faster scrolling when jog is double pressed in later versions (according to one obscure forum post). You could replicate this in software by applying some multiplier to the relative position received from the device (or use it for any feature you like)
+- `ABSOLUTE_DEADZONE`
+  - Same as `ABSOLUTE` but with a deadzone around 0, so less sensitive to accidental knocks / easier to reset to 0
 
 You can switch modes via the client:
 
 ```
-client.SetJogMode(hardware.JOGMODE_ABSOLUTE)
+client.SetJogMode(jogModes.ABSOLUTE)
 ```
 
-but you will have to handle lighting the buttons yourself, if you want the modes to work like they do with the eidtor connected to Davinci.
+You will have to handle lighting the buttons yourself, if you want the modes to work like they do with the editor connected to Davinci.
 
 ## Dev notes
 

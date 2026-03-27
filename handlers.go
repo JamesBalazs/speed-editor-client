@@ -1,29 +1,25 @@
 package speedEditor
 
 import (
-	"github.com/JamesBalazs/speed-editor-client/hardware/keys"
-	inputReport "github.com/JamesBalazs/speed-editor-client/input_report"
+	"fmt"
+
+	"github.com/JamesBalazs/speed-editor-client/input"
 )
 
-func defaultJogHandler(client SpeedEditorInt, report inputReport.JogReport) {
-
+func defaultJogHandler(client SpeedEditorInt, report input.JogReport) {
+	fmt.Printf("Jog mode: %s, value: %d\n", report.Mode.Name, report.Value)
 }
 
-func defaultBatteryHandler(client SpeedEditorInt, report inputReport.BatteryReport) {
-
+func defaultBatteryHandler(client SpeedEditorInt, report input.BatteryReport) {
+	fmt.Printf("Battery charging: %v, level: %f\n", report.Charging, report.Battery)
 }
 
-func defaultKeyPressHandler(client SpeedEditorInt, report inputReport.KeyPressReport) {
+func defaultKeyPressHandler(client SpeedEditorInt, report input.KeyPressReport) {
 	for _, key := range report.Keys {
-		if key.Led != keys.LED_NONE {
-			client.SetLeds([]uint32{key.Led})
-		}
-		if key.JogLed != keys.LED_NONE {
-			client.SetJogLeds([]uint8{key.JogLed})
-		}
+		fmt.Printf("Keys pressed: %s", key.Name)
 	}
 }
 
-func NullJogHandler(client SpeedEditorInt, report inputReport.JogReport)           {}
-func NullBatteryHandler(client SpeedEditorInt, report inputReport.BatteryReport)   {}
-func NullKeyPressHandler(client SpeedEditorInt, report inputReport.KeyPressReport) {}
+func NullJogHandler(client SpeedEditorInt, report input.JogReport)           {}
+func NullBatteryHandler(client SpeedEditorInt, report input.BatteryReport)   {}
+func NullKeyPressHandler(client SpeedEditorInt, report input.KeyPressReport) {}

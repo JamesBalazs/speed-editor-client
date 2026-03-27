@@ -81,15 +81,15 @@ type Key struct {
 	Width float32
 }
 
-// KeysCopy returns a new slice of all Keys each time it is called.
-func Keys() []Key {
+// Get returns a new slice of all Keys each time it is called.
+func Get() []Key {
 	keysCopy := make([]Key, len(keys))
 	copy(keys, keysCopy)
 
 	return keysCopy
 }
 
-// ByName returns a map of keys, for contsant time lookup by their Name.
+// ByName returns a map of keys, for constant time lookup by their Name.
 // A new copy of the map is returned each time, so when the consumer modifies
 // the map it doesn't modify the underlying data.
 func ByName() map[string]Key {
@@ -102,7 +102,7 @@ func ByName() map[string]Key {
 	return keyIndex
 }
 
-// ById returns a map of keys, for contsant time lookup by their Id.
+// ById returns a map of keys, for constant time lookup by their Id.
 // A new copy of the map is returned each time, so when the consumer modifies
 // the map it doesn't modify the underlying data.
 func ById() map[uint16]Key {
@@ -115,7 +115,7 @@ func ById() map[uint16]Key {
 	return keyIndex
 }
 
-// ByLedId returns a map of keys, for contsant time lookup by their LedId.
+// ByLedId returns a map of keys, for constant time lookup by their LedId.
 // A new copy of the map is returned each time, so when the consumer modifies
 // the map it doesn't modify the underlying data.
 func ByLedId() map[uint32]Key {
@@ -128,7 +128,7 @@ func ByLedId() map[uint32]Key {
 	return keyIndex
 }
 
-// ByJogLedId returns a map of keys, for contsant time lookup by their JogLedId.
+// ByJogLedId returns a map of keys, for constant time lookup by their JogLedId.
 // A new copy of the map is returned each time, so when the consumer modifies
 // the map it doesn't modify the underlying data.
 func ByJogLedId() map[uint8]Key {
@@ -141,7 +141,7 @@ func ByJogLedId() map[uint8]Key {
 	return keyIndex
 }
 
-// ByText returns a map of keys, for contsant time lookup by their Text.
+// ByText returns a map of keys, for constant time lookup by their Text.
 // A new copy of the map is returned each time, so when the consumer modifies
 // the map it doesn't modify the underlying data.
 func ByText() map[string]Key {
@@ -154,7 +154,7 @@ func ByText() map[string]Key {
 	return keyIndex
 }
 
-// BySubText returns a map of keys, for contsant time lookup by their SubText.
+// BySubText returns a map of keys, for constant time lookup by their SubText.
 // A new copy of the map is returned each time, so when the consumer modifies
 // the map it doesn't modify the underlying data.
 func BySubText() map[string]Key {
@@ -167,7 +167,7 @@ func BySubText() map[string]Key {
 	return keyIndex
 }
 
-// ByCol returns a map of keys, for contsant time lookup by their X
+// ByCol returns a map of keys, for constant time lookup by their X
 // and Y positions respectively.
 // A new copy of the map is returned each time, so when the consumer modifies
 // the map it doesn't modify the underlying data.
@@ -184,7 +184,7 @@ func ByCol() map[float32]map[int]Key {
 	return keyIndex
 }
 
-// ByRow returns a map of keys, for contsant time lookup by their Y
+// ByRow returns a map of keys, for constant time lookup by their Y
 // and X positions respectively.
 // A new copy of the map is returned each time, so when the consumer modifies
 // the map it doesn't modify the underlying data.
