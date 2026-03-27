@@ -9,12 +9,11 @@ import (
 	"github.com/JamesBalazs/speed-editor-client/hardware"
 	"github.com/JamesBalazs/speed-editor-client/hardware/keys"
 	inputReport "github.com/JamesBalazs/speed-editor-client/input_report"
+	"github.com/itchyny/volume-go"
 	"github.com/sstallion/go-hid"
 )
 
 var (
-	percent float64
-
 	keysByRow = keys.ByRow()
 )
 
@@ -40,11 +39,13 @@ func main() {
 }
 
 func customJogHandler(client speedEditor.SpeedEditorInt, report inputReport.JogReport) {
-	percent = (float64(report.Value) + 4096) / 8192
-	setLeds(client)
+	percent := (float64(report.Value) + 4096) / 8192
+	setLeds(client, percent)
+	vol := int(math.Ceil(percent * 100))
+	volume.SetVolume(vol)
 }
 
-func setLeds(client speedEditor.SpeedEditorInt) {
+func setLeds(client speedEditor.SpeedEditorInt, percent float64) {
 	rows := int(math.Ceil(percent * 6))
 	leds := []uint32{}
 	jogLeds := []uint8{}
