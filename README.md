@@ -3,7 +3,7 @@
 The aim of this project is to provide a fully featured, easy to use library for building open source software for the Davinci Resolve Speed Editor.
 
 There are a few existing solutions in Python, but these are not really designed for consumption as a library and any projects eg keymap editors would
-require the user to install Python, dependencies etc. I wanted a more polished solution in a compiled language, that anyone can use to exapnd the functionality
+require the user to install Python, dependencies etc. I wanted a more polished solution in a compiled language, that anyone can use to expand the functionality
 of this hardware.
 
 ## Examples
