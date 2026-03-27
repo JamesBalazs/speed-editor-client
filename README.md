@@ -143,36 +143,6 @@ client.SetJogMode(jogModes.ABSOLUTE)
 
 You will have to handle lighting the buttons yourself, if you want the modes to work like they do with the editor connected to Davinci.
 
-## Dev notes
-
-My setup is weird (WSL remote via Zed) so some extra steps are required to pass the Speed Editor through to WSL
-
-Installing [usbipd](https://github.com/dorssel/usbipd-win):
-```
-winget install usbipd
-```
-
-Listing devices:
-```
-usbipd list
-```
-
-Binding the Speed Editor (persists reboot, your BUSID will be different to mine):
-```
-sudo usbipd bind --busid=4-9
-```
-
-Attaching to WSL (does not persist reboot):
-```
-sudo usbipd attach --wsl --busid=4-9
-```
-
-To confirm w/ [lshid](https://github.com/FFY00/lshid) within WSL:
-```
-$HOME/go/bin/lshid
-```
-Should output something like `/dev/hidraw0: ID 1edb:da0e Blackmagic Design DaVinci Resolve Speed Editor`
-
 You can also get a list of keys and their attributes, with deterministic ordering:
 
 ```
@@ -204,6 +174,36 @@ jogModes.ByName()
 All of the above getters do a "copy on read" so it's a good idea to grab them once, store in a variable and refer to the variable rather than grabbing another copy.
 
 This is done since manipulating the maps could mess up the underlying key data in the library, since maps store references to the underlying data. By copying on read, you get a different copy of the data in the map at the expense of a small performance hit.
+
+## Dev notes
+
+My setup is weird (WSL remote via Zed) so some extra steps are required to pass the Speed Editor through to WSL
+
+Installing [usbipd](https://github.com/dorssel/usbipd-win):
+```
+winget install usbipd
+```
+
+Listing devices:
+```
+usbipd list
+```
+
+Binding the Speed Editor (persists reboot, your BUSID will be different to mine):
+```
+sudo usbipd bind --busid=4-9
+```
+
+Attaching to WSL (does not persist reboot):
+```
+sudo usbipd attach --wsl --busid=4-9
+```
+
+To confirm w/ [lshid](https://github.com/FFY00/lshid) within WSL:
+```
+$HOME/go/bin/lshid
+```
+Should output something like `/dev/hidraw0: ID 1edb:da0e Blackmagic Design DaVinci Resolve Speed Editor`
 
 ### Deps
 
