@@ -25,7 +25,9 @@ func main() {
 
 	fmt.Printf("Manufacturer: %s\nProduct: %s\nSerial: %s\n", deviceInfo.MfrStr, deviceInfo.ProductStr, deviceInfo.SerialNbr)
 
-	client.Authenticate()
+	if err := client.Authenticate(); err != nil {
+		log.Fatal(err)
+	}
 
 	client.SetKeyPressHandler(customKeyPressHandler)
 

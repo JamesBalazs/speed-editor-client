@@ -76,7 +76,9 @@ I re-implemented his authentication algorithm in Go, and exported the underlying
 When using the client, you just need to call `Authenticate` before sending / receiving any messages, and the handshake will be handled for you:
 
 ```go
-client.Authenticate()
+if err := client.Authenticate(); err != nil {
+	log.Fatal(err)
+}
 ```
 
 Finally, to receive messages from the Speed Editor, you can call `Poll`. This will start a loop which does a blocking read, waiting for either a keypress, battery report, or jog wheel movement from the device:

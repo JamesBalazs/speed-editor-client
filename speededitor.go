@@ -87,7 +87,7 @@ func NewClient() (SpeedEditorInt, error) {
 type SpeedEditorInt interface {
 	// Authenticate does the initial handshake with the Speed Editor,
 	// and re-auths periodically in the background when requested by the device.
-	Authenticate()
+	Authenticate() error
 
 	// GetDeviceInfo returns the serial number, manufacturer string etc published
 	// by the device via HID. This info is cached on init, so we don't have to
@@ -167,18 +167,26 @@ func (se *SpeedEditor) initialize() error {
 	return nil
 }
 
-func (se SpeedEditor) Authenticate() {
+func (se SpeedEditor) Authenticate() error {
 	// Getting the initial reAuthSeconds synchronously.
 	// Do not read or update this outside of the goroutine to avoid a data race.
-	reAuthSeconds := se.AuthHandler.Authenticate()
+	reAuthSeconds, err := se.AuthHandler.Authenticate()
+	if err != nil {
+		return fmt.Errorf("failed to authenticate: %w", err)
+	}
 
 	go func() {
 		for {
 			time.Sleep(reAuthSeconds)
 
-			reAuthSeconds = se.AuthHandler.Authenticate()
+			reAuthSeconds, err = se.AuthHandler.Authenticate()
+			if err != nil {
+				fmt.Printf("failed to re-authenticate: %v\n", err)
+			}
 		}
 	}()
+
+	return nil
 }
 
 func (se SpeedEditor) GetDeviceInfo() hid.DeviceInfo {

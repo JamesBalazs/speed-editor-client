@@ -701,9 +701,8 @@ func TestAuthenticate(t *testing.T) {
 			AuthHandler: AuthHandler{device: mockDevice},
 		}
 
-		assert.NotPanics(t, func() {
-			se.Authenticate()
-		})
+		err := se.Authenticate()
+		require.NoError(t, err)
 
 		time.Sleep(100 * time.Millisecond)
 	})
