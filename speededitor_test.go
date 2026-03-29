@@ -84,7 +84,7 @@ func TestNewClient(t *testing.T) {
 		// This test will succeed if a physical device is connected,
 		// or fail with an error if no device is present
 		client, err := NewClient()
-		
+
 		if err != nil {
 			// No device connected - verify error message
 			assert.Contains(t, err.Error(), "failed to create client")
@@ -145,9 +145,9 @@ func TestInitialize(t *testing.T) {
 func TestGetDeviceInfo(t *testing.T) {
 	t.Run("success returns cached device info", func(t *testing.T) {
 		deviceInfo := &hid.DeviceInfo{
-			MfrStr:    "Test Manufacturer",
+			MfrStr:     "Test Manufacturer",
 			ProductStr: "Test Product",
-			SerialNbr: "TEST123",
+			SerialNbr:  "TEST123",
 		}
 
 		se := &SpeedEditor{
