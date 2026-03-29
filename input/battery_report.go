@@ -1,19 +1,19 @@
 package input
 
 import (
-	"log"
+	"fmt"
 )
 
-func NewBatteryReport(id byte, payload []byte) BatteryReport {
+func NewBatteryReport(id byte, payload []byte) (BatteryReport, error) {
 	if id != ReportBattery {
-		log.Fatalf("malformed battery stats report id: %v payload: %v", id, payload)
+		return BatteryReport{}, fmt.Errorf("malformed battery stats report id: %v payload: %v", id, payload)
 	}
 
 	return BatteryReport{
 		Id:       id,
 		Charging: payload[0] == 1,
 		Battery:  float32(payload[1]) / 255,
-	}
+	}, nil
 }
 
 type BatteryReport struct {

@@ -16,13 +16,18 @@ func main() {
 	}
 	defer hid.Exit()
 
-	client := speedEditor.NewClient()
+	client, err := speedEditor.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	deviceInfo := client.GetDeviceInfo()
 
 	fmt.Printf("Manufacturer: %s\nProduct: %s\nSerial: %s\n", deviceInfo.MfrStr, deviceInfo.ProductStr, deviceInfo.SerialNbr)
 
-	client.Authenticate()
+	if err := client.Authenticate(); err != nil {
+		log.Fatal(err)
+	}
 
 	keysByCol := keys.ByCol()
 	keysByRow := keys.ByRow()
@@ -38,8 +43,12 @@ func main() {
 					leds = append(leds, key.Led)
 				}
 			}
-			client.SetLeds(leds)
-			client.SetJogLeds(jogLeds)
+			if err := client.SetLeds(leds); err != nil {
+				log.Printf("error setting LEDs: %v", err)
+			}
+			if err := client.SetJogLeds(jogLeds); err != nil {
+				log.Printf("error setting jog LEDs: %v", err)
+			}
 			time.Sleep(75 * time.Millisecond)
 		}
 
@@ -54,8 +63,12 @@ func main() {
 					leds = append(leds, key.Led)
 				}
 			}
-			client.SetLeds(leds)
-			client.SetJogLeds(jogLeds)
+			if err := client.SetLeds(leds); err != nil {
+				log.Printf("error setting LEDs: %v", err)
+			}
+			if err := client.SetJogLeds(jogLeds); err != nil {
+				log.Printf("error setting jog LEDs: %v", err)
+			}
 			time.Sleep(75 * time.Millisecond)
 		}
 	}

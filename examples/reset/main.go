@@ -14,14 +14,23 @@ func main() {
 	}
 	defer hid.Exit()
 
-	client := speedEditor.NewClient()
+	client, err := speedEditor.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	deviceInfo := client.GetDeviceInfo()
 
 	fmt.Printf("Manufacturer: %s\nProduct: %s\nSerial: %s\n", deviceInfo.MfrStr, deviceInfo.ProductStr, deviceInfo.SerialNbr)
 
-	client.Authenticate()
+	if err := client.Authenticate(); err != nil {
+		log.Fatal(err)
+	}
 
-	client.SetLeds([]uint32{})
-	client.SetJogLeds([]uint8{})
+	if err := client.SetLeds([]uint32{}); err != nil {
+		log.Fatal(err)
+	}
+	if err := client.SetJogLeds([]uint8{}); err != nil {
+		log.Fatal(err)
+	}
 }
