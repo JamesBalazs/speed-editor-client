@@ -30,7 +30,7 @@ var modes = []Mode{
 // Get returns a new slice of all jog Modes each time it is called.
 func Get() []Mode {
 	modesCopy := make([]Mode, len(modes))
-	copy(modes, modesCopy)
+	copy(modesCopy, modes)
 
 	return modesCopy
 }

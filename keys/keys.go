@@ -84,7 +84,7 @@ type Key struct {
 // Get returns a new slice of all Keys each time it is called.
 func Get() []Key {
 	keysCopy := make([]Key, len(keys))
-	copy(keys, keysCopy)
+	copy(keysCopy, keys)
 
 	return keysCopy
 }
