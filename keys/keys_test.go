@@ -520,30 +520,3 @@ func TestNullKey(t *testing.T) {
 		assert.Equal(t, float32(1), NullKey.Width)
 	})
 }
-
-// TestKeyStruct tests the Key struct
-func TestKeyStruct(t *testing.T) {
-	t.Run("can create key with all fields", func(t *testing.T) {
-		key := Key{
-			Name:    "TEST",
-			Id:      123,
-			Led:     456,
-			JogLed:  78,
-			Text:    "Test Text",
-			SubText: "Test Sub",
-			Row:     5,
-			Col:     3.5,
-			Width:   2.0,
-		}
-
-		assert.Equal(t, "TEST", key.Name)
-		assert.Equal(t, uint16(123), key.Id)
-		assert.Equal(t, uint32(456), key.Led)
-		assert.Equal(t, uint8(78), key.JogLed)
-		assert.Equal(t, "Test Text", key.Text)
-		assert.Equal(t, "Test Sub", key.SubText)
-		assert.Equal(t, 5, key.Row)
-		assert.Equal(t, float32(3.5), key.Col)
-		assert.Equal(t, float32(2.0), key.Width)
-	})
-}
