@@ -6,6 +6,8 @@ github.com/JamesBalazs/speed-editor-client v0.0.0-20260327111230-c30e6614de9b h1
 github.com/JamesBalazs/speed-editor-client v0.0.0-20260327111230-c30e6614de9b/go.mod h1:CIUhr0U0Oxp08IN8CPxDEwDo1SIZqPHuy56w1NF/YRs=
 github.com/JamesBalazs/speed-editor-client v0.0.0-20260327112322-abd1e460a3ff h1:aWAaKV2CJk0Cv3zxSlztcHxSfzXbQy2UEna8YDAGLGs=
 github.com/JamesBalazs/speed-editor-client v0.0.0-20260327112322-abd1e460a3ff/go.mod h1:CIUhr0U0Oxp08IN8CPxDEwDo1SIZqPHuy56w1NF/YRs=
+github.com/JamesBalazs/speed-editor-client v1.1.0 h1:GRH6AMd2adbU3TkzTnMjChoQ/lfP/ZEJJHVgN5dav+o=
+github.com/JamesBalazs/speed-editor-client v1.1.0/go.mod h1:2rNF0ASOP69N+Y0Nk0wSOjjY5/+AJcWM5CqPIOfA7wg=
 github.com/go-ole/go-ole v1.2.4/go.mod h1:XCwSNxSkXRo4vlyPy93sltvi/qJq0jqQhjqQNIwKuxM=
 github.com/go-ole/go-ole v1.2.6 h1:/Fpf6oFPoeFik9ty7siob0G6Ke8QvQEuVcuChpwXzpY=
 github.com/go-ole/go-ole v1.2.6/go.mod h1:pprOEPIfldk/42T2oK7lQ4v4JSDwmV0As9GaiUsvbm0=
