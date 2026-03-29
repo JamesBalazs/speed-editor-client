@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(go *)"
+      "Bash(go *)",
+      "Bash(sed *)"
     ]
-  }
+  },
+  "$version": 3
 }
