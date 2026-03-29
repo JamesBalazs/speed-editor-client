@@ -28,7 +28,7 @@ View docs on pkg.go.dev:
 
 To import as a dependency:
 
-```
+```go
 go get github.com/JamesBalazs/speed-editor-client
 ```
 
@@ -36,7 +36,7 @@ The project depends on the [go-hid](https://github.com/sstallion/go-hid) library
 
 Before creating a Speed Editor client, we need to initialize the HID library:
 
-```
+```go
 if err := hid.Init(); err != nil {
 	log.Fatal(err)
 }
@@ -58,7 +58,7 @@ This connects to the Speed Editor, requests the manufacturer info, and device in
 
 Device info is cached on initialize, since it will never change once the device is connected:=
 
-```
+```go
 deviceInfo := client.GetDeviceInfo()
 
 fmt.Printf("Manufacturer: %s\nProduct: %s\nSerial: %s\n", deviceInfo.MfrStr, deviceInfo.ProductStr, deviceInfo.SerialNbr)
@@ -75,13 +75,13 @@ I re-implemented his authentication algorithm in Go, and exported the underlying
 
 When using the client, you just need to call `Authenticate` before sending / receiving any messages, and the handshake will be handled for you:
 
-```
+```go
 client.Authenticate()
 ```
 
 Finally, to receive messages from the Speed Editor, you can call `Poll`. This will start a loop which does a blocking read, waiting for either a keypress, battery report, or jog wheel movement from the device:
 
-```
+```go
 client.Poll()
 ```
 
@@ -89,7 +89,7 @@ When any of the aforementioned events happen, the corresponding Handler function
 
 The event handlers can be overridden by the user to implement custom functionality:
 
-```
+```go
 func customJogHandler(client speedEditor.SpeedEditorInt, report input.JogReport) {
   fmt.Printf("Jog wheel position: %d\n", report.Value)
 }
@@ -115,7 +115,7 @@ This helps light LEDs based on their position such as in the lightshow and volum
 
 You can light any combination of LEDs on the board:
 
-```
+```go
 keysByName := keys.ByName()
 
 leds := []uint32{keysByName[keys.CAM7.Led], keysByName[keys.CAM5.Led], keysByName[keys.CAM3.Led]}
@@ -154,13 +154,13 @@ You will have to handle lighting the buttons yourself, if you want the modes to 
 
 You can also get a list of keys and their attributes, with deterministic ordering:
 
-```
+```go
 keys.Get()
 ```
 
 And maps / indexes of keys by name, ID, LED ID etc so you can easily retrieve key details given only a single attribute, in constant time:
 
-```
+```go
 keys.ById()
 keys.ByName()
 keys.ByLedId()
@@ -173,7 +173,7 @@ keys.ByRow()
 
 The same goes for jog modes:
 
-```
+```go
 jogModes.Get()
 
 jogModes.ById()
@@ -189,44 +189,44 @@ This is done since manipulating the maps could mess up the underlying key data i
 My setup is weird (WSL remote via Zed) so some extra steps are required to pass the Speed Editor through to WSL
 
 Installing [usbipd](https://github.com/dorssel/usbipd-win):
-```
+```bash
 winget install usbipd
 ```
 
 Listing devices:
-```
+```bash
 usbipd list
 ```
 
 Binding the Speed Editor (persists reboot, your BUSID will be different to mine):
-```
+```bash
 sudo usbipd bind --busid=4-9
 ```
 
 Attaching to WSL (does not persist reboot):
-```
+```bash
 sudo usbipd attach --wsl --busid=4-9
 ```
 
 To confirm w/ [lshid](https://github.com/FFY00/lshid) within WSL:
-```
+```bash
 $HOME/go/bin/lshid
 ```
 Should output something like `/dev/hidraw0: ID 1edb:da0e Blackmagic Design DaVinci Resolve Speed Editor`
 
 ### Deps
 
-```
+```bash
 sudo dnf install systemd-devel
 ```
 To get `libudev.h` on Fedora (required for lshid)
 
 I then had permission issues reading from `/dev/hidraw0` so had to create a [udev](https://wiki.archlinux.org/title/Udev) rule:
-```
+```bash
 KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0660", GROUP="plugdev"
 ```
 in `/etc/udev/rules.d/99-hidraw-permissions.rules`, then:
-```
+```bash
 sudo groupadd plugdev
 sudo usermod -a -G plugdev james
 sudo udevadm control --reload
@@ -238,12 +238,12 @@ After this `stat /dev/hidraw0` should list the new plugdev group.
 ### Cross platform builds for Windows
 
 mingw-w64 is required to compile the HID library on Linux for Windows with CGO. Installation:
-```
+```bash
 sudo dnf install mingw64-gcc
 ```
 
 To build the examples:
-```
+```bash
 GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc go build main.go
 ```
 
