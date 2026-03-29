@@ -16,7 +16,10 @@ func main() {
 	}
 	defer hid.Exit()
 
-	client := speedEditor.NewClient()
+	client, err := speedEditor.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	deviceInfo := client.GetDeviceInfo()
 
@@ -32,10 +35,14 @@ func main() {
 func customKeyPressHandler(client speedEditor.SpeedEditorInt, report input.KeyPressReport) {
 	for _, key := range report.Keys {
 		if key.Led != keys.LED_NONE {
-			client.SetLeds([]uint32{key.Led})
+			if err := client.SetLeds([]uint32{key.Led}); err != nil {
+				log.Printf("error setting LEDs: %v", err)
+			}
 		}
 		if key.JogLed != keys.LED_NONE {
-			client.SetJogLeds([]uint8{key.JogLed})
+			if err := client.SetJogLeds([]uint8{key.JogLed}); err != nil {
+				log.Printf("error setting jog LEDs: %v", err)
+			}
 		}
 	}
 }

@@ -2,14 +2,14 @@ package input
 
 import (
 	"encoding/binary"
-	"log"
+	"fmt"
 
 	"github.com/JamesBalazs/speed-editor-client/keys"
 )
 
-func NewKeyPressReport(id byte, payload []byte) KeyPressReport {
+func NewKeyPressReport(id byte, payload []byte) (KeyPressReport, error) {
 	if id != ReportKeyPress {
-		log.Fatalf("malformed keypress input report id: %v payload: %v", id, payload)
+		return KeyPressReport{}, fmt.Errorf("malformed keypress input report id: %v payload: %v", id, payload)
 	}
 
 	keys := []keys.Key{}
@@ -24,7 +24,7 @@ func NewKeyPressReport(id byte, payload []byte) KeyPressReport {
 	return KeyPressReport{
 		Id:   id,
 		Keys: keys,
-	}
+	}, nil
 }
 
 type KeyPressReport struct {

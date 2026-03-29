@@ -3,7 +3,6 @@ package speedEditor
 import (
 	"encoding/binary"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/JamesBalazs/speed-editor-client/input"
@@ -26,19 +25,22 @@ const (
 // creating the Speed Editor client, with `hid.Init()`.
 //
 // Ensure to use `defer hid.Exit()` to avoid memory leaks.
-func NewClient() SpeedEditorInt {
+func NewClient() (SpeedEditorInt, error) {
 	device, err := hid.OpenFirst(VID, PID)
 	if err != nil {
-		log.Fatal(err)
+		return nil, fmt.Errorf("failed to create client: %w", err)
 	}
 
 	speedEditor := &SpeedEditor{
 		device:      device,
 		AuthHandler: AuthHandler{device},
 	}
-	speedEditor.initialize()
 
-	return speedEditor
+	if err = speedEditor.initialize(); err != nil {
+		return nil, fmt.Errorf("failed to initialize: %w", err)
+	}
+
+	return speedEditor, nil
 }
 
 type SpeedEditorInt interface {
@@ -56,7 +58,7 @@ type SpeedEditorInt interface {
 	// the data length.
 	//
 	// The first byte indicates which report type was received.
-	Read() ([]byte, int)
+	Read() ([]byte, int, error)
 
 	// Poll starts a Read loop, parses each input report and calls Handle on each
 	// via the Report interface.
@@ -67,14 +69,14 @@ type SpeedEditorInt interface {
 	//
 	// SetLeds does not keep any state, so it will reset any previously enabled
 	// LEDs if they aren't included in the next call.
-	SetLeds(leds []uint32)
+	SetLeds(leds []uint32) error
 
 	// SetJogMode switches between the 4 jog modes:
 	// RELATIVE - Relative position
 	// ABSOLUTE - Absolute position from -4096 to 4096
 	// RELATIVE2 - Relative position, I think this is used to enable a faster scroll mode when the SCRL button is pressed twice in Resolve: https://www.reddit.com/r/blackmagicdesign/comments/1dv56d4/speed_editor_firmware_update_dial_speed_change/
 	// ABSOLUTE_0 - Absolute position from -4096 to 4096 with deadzone around 0
-	SetJogMode(mode uint8)
+	SetJogMode(mode uint8) error
 
 	// SetJogLeds accepts the bitmask for a list of LEDs, and binary ORs the bitmask
 	// to enable all LEDs in the mask. Jog LEDs are on a separate system, and overlap
@@ -82,7 +84,7 @@ type SpeedEditorInt interface {
 	//
 	// SetJogLeds does not keep any state, so it will reset any previously enabled
 	// LEDs if they aren't included in the next call.
-	SetJogLeds(leds []uint8)
+	SetJogLeds(leds []uint8) error
 
 	// SetJogHandler allows replacing the handler function that will be called on Poll()
 	// when a JogReport is received.
@@ -109,10 +111,10 @@ type SpeedEditor struct {
 
 // initialize grabs the device's serial number, manufacturer string etc via HID.
 // The handshake is not required before this step can take place.
-func (se *SpeedEditor) initialize() {
+func (se *SpeedEditor) initialize() error {
 	deviceInfo, err := se.device.GetDeviceInfo()
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("failed to get device info: %w", err)
 	}
 
 	se.deviceInfo = *deviceInfo
@@ -120,6 +122,8 @@ func (se *SpeedEditor) initialize() {
 	se.SetJogHandler(defaultJogHandler)
 	se.SetBatteryHandler(defaultBatteryHandler)
 	se.SetKeyPressHandler(defaultKeyPressHandler)
+
+	return nil
 }
 
 func (se SpeedEditor) Authenticate() {
@@ -127,12 +131,8 @@ func (se SpeedEditor) Authenticate() {
 	// Do not read or update this outside of the goroutine to avoid a data race.
 	reAuthSeconds := se.AuthHandler.Authenticate()
 
-	fmt.Printf("Initial handshake\n")
-
 	go func() {
 		for {
-			fmt.Printf("Sleeping %s\n", reAuthSeconds)
-
 			time.Sleep(reAuthSeconds)
 
 			reAuthSeconds = se.AuthHandler.Authenticate()
@@ -144,21 +144,29 @@ func (se SpeedEditor) GetDeviceInfo() hid.DeviceInfo {
 	return se.deviceInfo
 }
 
-func (se SpeedEditor) Read() ([]byte, int) {
+func (se SpeedEditor) Read() ([]byte, int, error) {
 	data := make([]byte, 9)
-	len, err := se.device.Read(data)
+	n, err := se.device.Read(data)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, 0, fmt.Errorf("failed to read from device: %w", err)
 	}
 
-	return data, len
+	return data, n, nil
 }
 
 func (se SpeedEditor) Poll() {
 	for {
-		data, _ := se.Read()
-		report := input.ReportBytes(data).ToReport()
+		data, _, err := se.Read()
+		if err != nil {
+			fmt.Printf("error reading from device: %v\n", err)
+			continue
+		}
+		report, parseErr := input.ReportBytes(data).ToReport()
+		if parseErr != nil {
+			fmt.Printf("error parsing report: %v\n", parseErr)
+			continue
+		}
 		se.HandleReport(report)
 	}
 }
@@ -174,7 +182,7 @@ func (se SpeedEditor) HandleReport(genericReport any) {
 	} // TODO handle unknown reports (log error and continue)
 }
 
-func (se SpeedEditor) SetLeds(leds []uint32) {
+func (se SpeedEditor) SetLeds(leds []uint32) error {
 	payload := make([]byte, 5)
 	payload[0] = LedReportId
 
@@ -184,20 +192,30 @@ func (se SpeedEditor) SetLeds(leds []uint32) {
 	}
 	binary.LittleEndian.PutUint32(payload[1:], bitField)
 
-	se.device.Write(payload)
+	_, err := se.device.Write(payload)
+	if err != nil {
+		return fmt.Errorf("failed to set LEDs: %w", err)
+	}
+
+	return nil
 }
 
-func (se SpeedEditor) SetJogMode(mode uint8) {
+func (se SpeedEditor) SetJogMode(mode uint8) error {
 	payload := make([]byte, 7)
 	payload[0] = JogModeReportId
 	payload[1] = mode
 	// bytes 3-6 are zero
 	payload[6] = 255 // byte 7 has unknown purpose
 
-	se.device.Write(payload)
+	_, err := se.device.Write(payload)
+	if err != nil {
+		return fmt.Errorf("failed to set jog mode: %w", err)
+	}
+
+	return nil
 }
 
-func (se SpeedEditor) SetJogLeds(leds []uint8) {
+func (se SpeedEditor) SetJogLeds(leds []uint8) error {
 	payload := make([]byte, 2)
 	payload[0] = JogLedReportId
 
@@ -207,7 +225,12 @@ func (se SpeedEditor) SetJogLeds(leds []uint8) {
 	}
 	payload[1] = bitField
 
-	se.device.Write(payload)
+	_, err := se.device.Write(payload)
+	if err != nil {
+		return fmt.Errorf("failed to set jog LEDs: %w", err)
+	}
+
+	return nil
 }
 
 func (se *SpeedEditor) SetJogHandler(handler func(SpeedEditorInt, input.JogReport)) {

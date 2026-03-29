@@ -23,7 +23,10 @@ func main() {
 	}
 	defer hid.Exit()
 
-	client := speedEditor.NewClient()
+	client, err := speedEditor.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	deviceInfo := client.GetDeviceInfo()
 
@@ -31,7 +34,9 @@ func main() {
 
 	client.Authenticate()
 
-	client.SetJogMode(jogModes.ID_ABSOLUTE)
+	if err := client.SetJogMode(jogModes.ID_ABSOLUTE); err != nil {
+		log.Fatal(err)
+	}
 	client.SetJogHandler(customJogHandler)
 	client.SetKeyPressHandler(speedEditor.NullKeyPressHandler)
 
@@ -61,6 +66,10 @@ func setLeds(client speedEditor.SpeedEditorInt, percent float64) {
 		}
 	}
 
-	client.SetLeds(leds)
-	client.SetJogLeds(jogLeds)
+	if err := client.SetLeds(leds); err != nil {
+		log.Printf("error setting LEDs: %v", err)
+	}
+	if err := client.SetJogLeds(jogLeds); err != nil {
+		log.Printf("error setting jog LEDs: %v", err)
+	}
 }

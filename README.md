@@ -47,8 +47,11 @@ Don't forget to defer a call to `Exit` to avoid memory leaks.
 
 Next we can initialize the client:
 
-```
-client := speedEditor.NewClient()
+```go
+client, err := speedEditor.NewClient()
+if err != nil {
+	log.Fatal(err)
+}
 ```
 
 This connects to the Speed Editor, requests the manufacturer info, and device info such as serial number, and sets up the default event handlers.
@@ -118,8 +121,12 @@ keysByName := keys.ByName()
 leds := []uint32{keysByName[keys.CAM7.Led], keysByName[keys.CAM5.Led], keysByName[keys.CAM3.Led]}
 jogLeds := []uint8{keysByName[keys.SHTL.JogLed], keysByName[keys.JOG.JogLed], keysByName[keys.SCROLL.JogLed]}
 
-client.SetLeds(leds)
-client.SetJogLeds(jogLeds)
+if err := client.SetLeds(leds); err != nil {
+	log.Fatal(err)
+}
+if err := client.SetJogLeds(jogLeds); err != nil {
+	log.Fatal(err)
+}
 ```
 
 `JOG`/`SCRL`/`SHTL` are on a different system to the other LEDs, so a different function is required to light them.
@@ -137,8 +144,10 @@ Finally, there are a few different jog modes available on the device:
 
 You can switch modes via the client:
 
-```
-client.SetJogMode(jogModes.ABSOLUTE)
+```go
+if err := client.SetJogMode(jogModes.ABSOLUTE); err != nil {
+	log.Fatal(err)
+}
 ```
 
 You will have to handle lighting the buttons yourself, if you want the modes to work like they do with the editor connected to Davinci.

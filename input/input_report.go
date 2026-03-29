@@ -1,6 +1,8 @@
 package input
 
 import (
+	"fmt"
+
 	"github.com/JamesBalazs/speed-editor-client/keys"
 )
 
@@ -22,19 +24,19 @@ var (
 
 type ReportBytes []byte
 
-func (byt ReportBytes) ToReport() any {
+func (byt ReportBytes) ToReport() (any, error) {
 	id := byt[0]
 	payload := byt[1:]
 
 	switch id {
 	case ReportJog:
-		return NewJogReport(id, payload)
+		return NewJogReport(id, payload), nil
 	case ReportKeyPress:
 		return NewKeyPressReport(id, payload)
 	case ReportBattery:
 		return NewBatteryReport(id, payload)
 	default:
-		return nil
+		return nil, fmt.Errorf("unknown report id: %v", id)
 	}
 }
 

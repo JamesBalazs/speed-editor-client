@@ -14,7 +14,10 @@ func main() {
 	}
 	defer hid.Exit()
 
-	client := speedEditor.NewClient()
+	client, err := speedEditor.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	deviceInfo := client.GetDeviceInfo()
 
@@ -22,6 +25,10 @@ func main() {
 
 	client.Authenticate()
 
-	client.SetLeds([]uint32{})
-	client.SetJogLeds([]uint8{})
+	if err := client.SetLeds([]uint32{}); err != nil {
+		log.Fatal(err)
+	}
+	if err := client.SetJogLeds([]uint8{}); err != nil {
+		log.Fatal(err)
+	}
 }
