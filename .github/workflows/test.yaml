@@ -1,0 +1,58 @@
+name: Go CI
+
+on:
+    push:
+        branches:
+            - "**"
+    pull_request:
+        branches:
+            - "**"
+
+permissions:
+    contents: read
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version: "1.26" # Specify your desired Go version
+
+            - name: Update package source
+              run: sudo apt-get update
+
+            - name: Install systemd-devel
+              run: sudo apt-get install libudev-dev
+
+            - name: Download dependencies
+              run: go mod download
+
+            - name: Build
+              run: go build -v ./...
+
+            - name: Test with the Go CLI
+              run: go test -v ./...
+
+            - name: Generate coverage report
+              run: go test -coverprofile=coverage.out ./...
+
+            - name: Check coverage
+              id: coverage
+              run: |
+                  coverage=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+                  echo "total_coverage=$coverage" >> $GITHUB_OUTPUT
+                  echo "Coverage: $coverage%"
+
+            - name: Fail if coverage is below threshold
+              run: |
+                  total_coverage="${{ steps.coverage.outputs.total_coverage }}"
+                  if (( $(echo "$total_coverage < 50" | bc -l) )); then
+                    echo "Coverage ($total_coverage%) is below the threshold (50%)"
+                    exit 1
+                  fi
