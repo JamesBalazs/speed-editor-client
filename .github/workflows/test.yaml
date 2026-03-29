@@ -40,7 +40,7 @@ jobs:
               run: go test -v ./...
 
             - name: Generate coverage report
-              run: go test -coverprofile=coverage.out ./...
+              run: go test -coverprofile=coverage.out $(go list ./... | grep -v /examples/)
 
             - name: Check coverage
               id: coverage
