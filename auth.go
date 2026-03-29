@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/JamesBalazs/speed-editor-client/auth"
-	"github.com/sstallion/go-hid"
 )
 
 var (
@@ -38,7 +37,7 @@ type AuthHandlerInt interface {
 }
 
 type AuthHandler struct {
-	device *hid.Device
+	device deviceInterface
 }
 
 // Authenticate handles the entire handshake between the host and the Speed Editor.

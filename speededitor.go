@@ -18,6 +18,45 @@ const (
 	JogLedReportId  = 4
 )
 
+// deviceInterface defines the HID device operations for testability
+type deviceInterface interface {
+	Close() error
+	Read(buf []byte) (int, error)
+	Write(buf []byte) (int, error)
+	GetDeviceInfo() (*hid.DeviceInfo, error)
+	GetFeatureReport(buf []byte) (int, error)
+	SendFeatureReport(buf []byte) (int, error)
+}
+
+// hidDeviceWrapper wraps the hid.Device to implement deviceInterface
+type hidDeviceWrapper struct {
+	device *hid.Device
+}
+
+func (w *hidDeviceWrapper) Close() error {
+	return w.device.Close()
+}
+
+func (w *hidDeviceWrapper) Read(buf []byte) (int, error) {
+	return w.device.Read(buf)
+}
+
+func (w *hidDeviceWrapper) Write(buf []byte) (int, error) {
+	return w.device.Write(buf)
+}
+
+func (w *hidDeviceWrapper) GetDeviceInfo() (*hid.DeviceInfo, error) {
+	return w.device.GetDeviceInfo()
+}
+
+func (w *hidDeviceWrapper) GetFeatureReport(buf []byte) (int, error) {
+	return w.device.GetFeatureReport(buf)
+}
+
+func (w *hidDeviceWrapper) SendFeatureReport(buf []byte) (int, error) {
+	return w.device.SendFeatureReport(buf)
+}
+
 // NewClient connects to a Speed Editor via the HID library
 // and returns a SpeedEditorInt to interact with the device.
 //
@@ -31,9 +70,11 @@ func NewClient() (SpeedEditorInt, error) {
 		return nil, fmt.Errorf("failed to create client: %w", err)
 	}
 
+	wrapper := &hidDeviceWrapper{device: device}
+
 	speedEditor := &SpeedEditor{
-		device:      device,
-		AuthHandler: AuthHandler{device},
+		device:      wrapper,
+		AuthHandler: AuthHandler{device: wrapper},
 	}
 
 	if err = speedEditor.initialize(); err != nil {
@@ -98,7 +139,7 @@ type SpeedEditorInt interface {
 }
 
 type SpeedEditor struct {
-	device     *hid.Device
+	device     deviceInterface
 	deviceInfo hid.DeviceInfo
 	activeLeds []uint32
 
